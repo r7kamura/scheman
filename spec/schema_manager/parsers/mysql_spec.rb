@@ -28,6 +28,7 @@ describe SchemaManager::Parsers::Mysql do
       let(:str) do
         <<-EOS.strip_heredoc
           # comment
+          USE database_name;
         EOS
       end
 

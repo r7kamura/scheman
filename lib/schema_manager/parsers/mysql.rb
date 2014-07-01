@@ -16,11 +16,20 @@ module SchemaManager
       end
 
       class Parser < Parslet::Parser
-        root(:statement)
+        # @return [Parslet::Atoms::Sequence] Case-insensitive pattern from a given string
+        def case_insensitive_str(str)
+          str.each_char.map {|char| match[char.downcase + char.upcase] }.reduce(:>>)
+        end
+
+        root(:statements)
+
+        rule(:statements) do
+          statement.repeat(1)
+        end
 
         rule(:statement) do
           comment |
-          #use |
+          use |
           #set |
           #drop |
           #create |
@@ -46,6 +55,10 @@ module SchemaManager
           spaces.maybe
         end
 
+        rule(:delimiter) do
+          str(";")
+        end
+
         rule(:comment) do
           spaces? >> comment_prefix >> comment_body >> newline
         end
@@ -58,8 +71,16 @@ module SchemaManager
           (newline.absent? >> any).repeat
         end
 
+        rule(:use) do
+          user_in_case_insensitive >> (delimiter.absent? >> any).repeat >> delimiter >> spaces?
+        end
+
+        rule(:user_in_case_insensitive) do
+          case_insensitive_str("use")
+        end
+
         rule(:empty_statement) do
-          str(";") >> spaces?
+          delimiter
         end
       end
     end
