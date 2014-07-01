@@ -64,32 +64,28 @@ module SchemaManager
           str(";")
         end
 
+        rule(:eol) do
+          delimiter >> spaces?
+        end
+
         rule(:comment) do
-          comment_prefix >> comment_body >> newline >> spaces?
-        end
-
-        rule(:comment_prefix) do
-          str("#") | str("--")
-        end
-
-        rule(:comment_body) do
-          (newline.absent? >> any).repeat
+          (str("#") | str("--")) >> non(newline) >> newline >> spaces?
         end
 
         rule(:use) do
-          case_insensitive_str("use") >> non(delimiter) >> delimiter >> spaces?
+          case_insensitive_str("use") >> non(delimiter) >> eol
         end
 
         rule(:set) do
-          case_insensitive_str("set") >> non(delimiter) >> delimiter >> spaces?
+          case_insensitive_str("set") >> non(delimiter) >> eol
         end
 
         rule(:drop) do
-          case_insensitive_str("drop") >> str(" TABLE") >> non(delimiter) >> delimiter >> spaces?
+          case_insensitive_str("drop") >> str(" TABLE") >> non(delimiter) >> eol
         end
 
         rule(:create) do
-          str("CREATE ") >> case_insensitive_str("database") >> spaces >> non(delimiter) >> delimiter >> spaces?
+          str("CREATE ") >> case_insensitive_str("database") >> spaces >> non(delimiter) >> eol
         end
 
         rule(:empty_statement) do
