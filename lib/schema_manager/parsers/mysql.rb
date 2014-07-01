@@ -26,6 +26,18 @@ module SchemaManager
           (sequence.absent? >> any).repeat
         end
 
+        def quoted(value)
+          str("`") >> value >> str("`")
+        end
+
+        def parenthetical(value)
+          str("(") >> value >> str(")")
+        end
+
+        def comma_separated(value)
+          value >> (str(",") >> value).repeat
+        end
+
         root(:statements)
 
         rule(:statements) do
@@ -38,7 +50,7 @@ module SchemaManager
           set |
           drop |
           create |
-          #alter |
+          alter |
           #insert |
           #delimiter |
           empty_statement
@@ -64,6 +76,18 @@ module SchemaManager
           str(";")
         end
 
+        rule(:something) do
+          spaces >> match('[\S]').repeat >> spaces
+        end
+
+        rule(:string) do
+          any.repeat(1)
+        end
+
+        rule(:name) do
+          quoted(string) | string
+        end
+
         rule(:eol) do
           delimiter >> spaces?
         end
@@ -81,11 +105,39 @@ module SchemaManager
         end
 
         rule(:drop) do
-          case_insensitive_str("drop") >> str(" TABLE") >> non(delimiter) >> eol
+          case_insensitive_str("drop table") >> non(delimiter) >> eol
         end
 
         rule(:create) do
-          str("CREATE ") >> case_insensitive_str("database") >> spaces >> non(delimiter) >> eol
+          case_insensitive_str("create database") >> non(delimiter) >> eol
+        end
+
+        rule(:alter) do
+          case_insensitive_str("alter table") >> something >> comma_separated(alter_specification) >> eol
+        end
+
+        rule(:alter_specification) do
+          case_insensitive_str("add") >> spaces >> foreign_key_def
+        end
+
+        rule(:foreign_key_def) do
+          foreign_key_def_begin >> spaces >> parens_field_list >> spaces >> reference_definition
+        end
+
+        rule(:foreign_key_def_begin) do
+          (case_insensitive_str("constraint foreign key") >> something) |
+            (case_insensitive_str("constraint") >> something >> case_insensitive_str("foreign key")) |
+            (case_insensitive_str("foreign key") >> something) |
+            (case_insensitive_str("foreign key"))
+        end
+
+        rule(:parens_field_list) do
+          parenthetical(comma_separated(name))
+        end
+
+        # TODO: match_type.maybe >> on_delete.maybe >> on_update.maybe
+        rule(:reference_definition) do
+          case_insensitive_str("references") >> something >> parens_field_list.maybe
         end
 
         rule(:empty_statement) do

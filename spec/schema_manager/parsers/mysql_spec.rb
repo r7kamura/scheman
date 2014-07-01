@@ -22,7 +22,7 @@ describe SchemaManager::Parsers::Mysql do
   describe ".parse" do
     describe "#parse" do
       subject do
-        described_class.parse(str)
+        described_class.parse(str) rescue puts $!.cause.ascii_tree
       end
 
       let(:str) do
