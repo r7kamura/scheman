@@ -34,6 +34,8 @@ describe SchemaManager::Parsers::Mysql do
           SET variable_name=value;
 
           DROP TABLE table_name;
+
+          CREATE database table_name;
         EOS
       end
 
