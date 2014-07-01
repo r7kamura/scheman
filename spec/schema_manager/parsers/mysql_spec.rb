@@ -18,4 +18,22 @@ describe SchemaManager::Parsers::Mysql do
       should be_a SchemaManager::Schema
     end
   end
+
+  describe ".parse" do
+    describe "#parse" do
+      subject do
+        described_class.parse(str)
+      end
+
+      let(:str) do
+        <<-EOS.strip_heredoc
+          # comment
+        EOS
+      end
+
+      it "can parse MySQL syntax" do
+        expect { subject }.not_to raise_error
+      end
+    end
+  end
 end
