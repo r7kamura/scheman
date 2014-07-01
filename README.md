@@ -34,3 +34,8 @@ COMMIT;
 
 ## Note
 So far, we are aimed at supporting MySQL for the 1st prototype.
+
+### TODO
+* Create Parslet::Transform for MySQL
+* Improve Parslet::Parser for MySQL
+* Generate Schema::Manager::Schema from Parslet objects
