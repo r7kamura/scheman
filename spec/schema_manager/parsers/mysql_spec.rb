@@ -28,7 +28,10 @@ describe SchemaManager::Parsers::Mysql do
       let(:str) do
         <<-EOS.strip_heredoc
           # comment
+
           USE database_name;
+
+          SET foreign_key_checks=0;
         EOS
       end
 

@@ -21,6 +21,11 @@ module SchemaManager
           str.each_char.map {|char| match[char.downcase + char.upcase] }.reduce(:>>)
         end
 
+        # @return [Parslet::Atoms::Repetation]
+        def non(sequence)
+          (sequence.absent? >> any).repeat
+        end
+
         root(:statements)
 
         rule(:statements) do
@@ -30,7 +35,7 @@ module SchemaManager
         rule(:statement) do
           comment |
           use |
-          #set |
+          set |
           #drop |
           #create |
           #alter |
@@ -60,7 +65,7 @@ module SchemaManager
         end
 
         rule(:comment) do
-          spaces? >> comment_prefix >> comment_body >> newline
+          comment_prefix >> comment_body >> newline >> spaces?
         end
 
         rule(:comment_prefix) do
@@ -72,11 +77,11 @@ module SchemaManager
         end
 
         rule(:use) do
-          user_in_case_insensitive >> (delimiter.absent? >> any).repeat >> delimiter >> spaces?
+          case_insensitive_str("use") >> non(delimiter) >> delimiter >> spaces?
         end
 
-        rule(:user_in_case_insensitive) do
-          case_insensitive_str("use")
+        rule(:set) do
+          case_insensitive_str("set") >> non(delimiter) >> delimiter >> spaces?
         end
 
         rule(:empty_statement) do
