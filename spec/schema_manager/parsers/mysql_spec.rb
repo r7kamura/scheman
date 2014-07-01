@@ -36,6 +36,8 @@ describe SchemaManager::Parsers::Mysql do
           DROP TABLE table_name;
 
           CREATE database table_name;
+
+          DELIMITER //
         EOS
       end
 

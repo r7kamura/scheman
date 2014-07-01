@@ -52,7 +52,7 @@ module SchemaManager
           create |
           alter |
           #insert |
-          #delimiter |
+          delimiter_statement |
           empty_statement
         end
 
@@ -138,6 +138,10 @@ module SchemaManager
         # TODO: match_type.maybe >> on_delete.maybe >> on_update.maybe
         rule(:reference_definition) do
           case_insensitive_str("references") >> something >> parens_field_list.maybe
+        end
+
+        rule(:delimiter_statement) do
+          case_insensitive_str("delimiter") >> non(delimiter)
         end
 
         rule(:empty_statement) do
