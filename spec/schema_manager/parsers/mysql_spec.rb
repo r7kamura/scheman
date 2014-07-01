@@ -31,7 +31,9 @@ describe SchemaManager::Parsers::Mysql do
 
           USE database_name;
 
-          SET foreign_key_checks=0;
+          SET variable_name=value;
+
+          DROP TABLE table_name;
         EOS
       end
 

@@ -36,7 +36,7 @@ module SchemaManager
           comment |
           use |
           set |
-          #drop |
+          drop |
           #create |
           #alter |
           #insert |
@@ -49,7 +49,7 @@ module SchemaManager
         end
 
         rule(:space) do
-          match('\s').repeat(1)
+          match('\s')
         end
 
         rule(:spaces) do
@@ -82,6 +82,10 @@ module SchemaManager
 
         rule(:set) do
           case_insensitive_str("set") >> non(delimiter) >> delimiter >> spaces?
+        end
+
+        rule(:drop) do
+          case_insensitive_str("drop") >> str(" TABLE") >> non(delimiter) >> delimiter >> spaces?
         end
 
         rule(:empty_statement) do
