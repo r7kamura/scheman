@@ -27,12 +27,7 @@ module SchemaManager
           #alter |
           #insert |
           #delimiter |
-          #anything |
           empty_statement
-        end
-
-        rule(:anything) do
-          any.repeat
         end
 
         rule(:newline) do
