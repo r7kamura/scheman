@@ -9,10 +9,11 @@ module SchemaManager
         parser.parse(schema)
       end
 
-      # TODO
       # @param schema [String]
+      # @return [SchemaManager::Schema]
       def parse(schema)
-        Schema.new
+        result = self.class.parse(schema)
+        Schema.new(result)
       end
 
       class Parser < Parslet::Parser
