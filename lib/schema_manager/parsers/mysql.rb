@@ -119,7 +119,15 @@ module SchemaManager
         end
 
         rule(:create_database) do
-          case_insensitive_str("create database") >> non(delimiter) >> eol
+          create_database_beginning >> non(delimiter) >> eol
+        end
+
+        rule(:create_database_beginning) do
+          case_insensitive_str("create") >> str(" ") >> word_database
+        end
+
+        rule(:word_database) do
+          case_insensitive_str("database") | case_insensitive_str("schema")
         end
 
         rule(:insert) do
