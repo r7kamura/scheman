@@ -420,11 +420,13 @@ module SchemaManager
         #   ]
         # }
         rule(table_name: simple(:table_name), table_components: subtree(:table_components)) do
-          fields = table_components.map do |component|
+          components = Array.wrap(table_components)
+
+          fields = components.map do |component|
             component[:field]
           end.compact
 
-          constraints = table_components.map do |component|
+          constraints = components.map do |component|
             component[:constraint]
           end.compact
 

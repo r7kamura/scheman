@@ -104,6 +104,34 @@ describe SchemaManager::Parsers::Mysql do
       end
     end
 
+    context "with NOT NULL" do
+      let(:str) do
+        "CREATE TABLE `recipes` (`column1` INTEGER NOT NULL);"
+      end
+
+      it "succeeds in parse" do
+        should == [
+          {
+            create_table: {
+              name: "recipes",
+              fields: [
+                {
+                  name: "column1",
+                  type: "integer",
+                  qualifiers: [
+                    {
+                      type: :not_null,
+                    },
+                  ],
+                },
+              ],
+              constraints: [],
+            },
+          },
+        ]
+      end
+    end
+
     context "with CREATE TABLE" do
       let(:str) do
         <<-EOS.strip_heredoc
