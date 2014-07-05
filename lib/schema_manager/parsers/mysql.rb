@@ -375,12 +375,12 @@ module SchemaManager
         # {
         #   name: "id",
         #   type: "integer"
-        #   qualifiers: [:not_null, :auto_increment],
+        #   qualifiers: [...],
         # }
         rule(
           field_type_name: simple(:field_type_name),
           field_name: simple(:field_name),
-          field_qualifiers: sequence(:field_qualifiers)
+          field_qualifiers: subtree(:field_qualifiers)
         ) do
           {
             name: field_name.to_s,
@@ -416,24 +416,34 @@ module SchemaManager
         end
 
         rule(auto_increment_qualifier: simple(:auto_increment_qualifier)) do
-          :auto_increment
+          {
+            type: :auto_increment,
+          }
         end
 
         rule(not_null_qualifier: simple(:not_null_qualifier)) do
-          :not_null
+          {
+            type: :not_null,
+          }
         end
 
         rule(null_qualifier: simple(:null_qualifier)) do
-          :null
+          {
+            type: :null,
+          }
         end
 
         rule(primary_key_qualifier: simple(:primary_key_qualifier)) do
-          :primary_key
+          {
+            type: :primary_key,
+          }
         end
 
         # TODO: Character set should have a variable of what charset it is
         rule(character_set_qualifier: simple(:character_set_qualifier)) do
-          :character_set
+          {
+            type: :character_set,
+          }
         end
       end
     end

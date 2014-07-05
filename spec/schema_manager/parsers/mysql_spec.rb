@@ -29,8 +29,8 @@ describe SchemaManager::Parsers::Mysql do
           CREATE DATABASE database_name;
 
           CREATE TABLE `recipes` (
-            `id` INTEGER NOT NULL AUTO INCREMENT,
-            `name` VARCHAR(255) NOT NULL,
+            `column1` INTEGER NOT NULL AUTO INCREMENT,
+            `column2` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`id`)
           );
 
@@ -52,14 +52,25 @@ describe SchemaManager::Parsers::Mysql do
               name: "recipes",
               fields: [
                 {
-                  name: "id",
+                  name: "column1",
                   type: "integer",
-                  qualifiers: [:not_null, :auto_increment],
+                  qualifiers: [
+                    {
+                      type: :not_null,
+                    },
+                    {
+                      type: :auto_increment,
+                    },
+                  ],
                 },
                 {
-                  name: "name",
+                  name: "column2",
                   type: "varchar",
-                  qualifiers: [:not_null],
+                  qualifiers: [
+                    {
+                      type: :not_null,
+                    },
+                  ],
                 },
               ],
               constraints: [
@@ -117,22 +128,41 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   name: "column1",
                   type: "integer",
-                  qualifiers: [:not_null, :auto_increment],
+                  qualifiers: [
+                    {
+                      type: :not_null,
+                    },
+                    {
+                      type: :auto_increment,
+                    },
+                  ],
                 },
                 {
                   name: "column2",
                   type: "varchar",
-                  qualifiers: [:not_null],
+                  qualifiers: [
+                    {
+                      type: :not_null,
+                    },
+                  ],
                 },
                 {
                   name: "column3",
                   type: "integer",
-                  qualifiers: [:null],
+                  qualifiers: [
+                    {
+                      type: :null,
+                    },
+                  ],
                 },
                 {
                   name: "column4",
                   type: "integer",
-                  qualifiers: [:primary_key],
+                  qualifiers: [
+                    {
+                      type: :primary_key,
+                    },
+                  ],
                 },
                 {
                   name: "column5",
@@ -142,7 +172,11 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   name: "column6",
                   type: "varchar",
-                  qualifiers: [:character_set],
+                  qualifiers: [
+                    {
+                      type: :character_set,
+                    },
+                  ],
                 },
               ],
               constraints: [
