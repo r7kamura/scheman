@@ -328,6 +328,15 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
+        rule(statements: subtree(:statements)) do
+          case statements
+          when Array
+            statements
+          else
+            []
+          end
+        end
+
         # @example
         # "id"
         rule(quoted_identifier: simple(:quoted_identifier)) do

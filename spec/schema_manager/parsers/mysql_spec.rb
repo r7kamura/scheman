@@ -30,7 +30,8 @@ describe SchemaManager::Parsers::Mysql do
 
           CREATE TABLE `recipes` (
             `id` INTEGER PRIMARY KEY NOT NULL AUTO INCREMENT,
-            `name` VARCHAR(255) NOT NULL
+            `name` VARCHAR(255) NOT NULL,
+            PRIMARY KEY (`id`)
           );
 
           ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
@@ -40,21 +41,54 @@ describe SchemaManager::Parsers::Mysql do
           DELIMITER //
         EOS
       end
-      it { should be_true }
+
+      it "succeeds in parse" do
+        should == [
+          {
+            database_name: "database_name",
+          },
+          {
+            create_table: {
+              name: "recipes",
+              fields: [
+                {
+                  name: "id",
+                  type: "integer",
+                },
+                {
+                  name: "name",
+                  type: "varchar",
+                },
+              ],
+              constraints: [
+                {
+                  primary_key: "id",
+                },
+              ],
+            },
+          },
+        ]
+      end
     end
 
     context "with CREATE DATABASE" do
       let(:str) do
         "CREATE DATABASE database_name;"
       end
-      it { should be_true }
+
+      it "succeeds in parse" do
+        should == []
+      end
     end
 
     context "with CREATE SCHEMA" do
       let(:str) do
         "CREATE SCHEMA database_name;"
       end
-      it { should be_true }
+
+      it "succeeds in parse" do
+        should == []
+      end
     end
 
     context "with CREATE TABLE" do
@@ -69,30 +103,28 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        should == {
-          statements: [
-            {
-              create_table: {
-                name: "recipes",
-                fields: [
-                  {
-                    name: "id",
-                    type: "integer",
-                  },
-                  {
-                    name: "name",
-                    type: "varchar",
-                  },
-                ],
-                constraints: [
-                  {
-                    primary_key: "id",
-                  },
-                ],
-              },
+        should == [
+          {
+            create_table: {
+              name: "recipes",
+              fields: [
+                {
+                  name: "id",
+                  type: "integer",
+                },
+                {
+                  name: "name",
+                  type: "varchar",
+                },
+              ],
+              constraints: [
+                {
+                  primary_key: "id",
+                },
+              ],
             },
-          ],
-        }
+          },
+        ]
       end
     end
   end
