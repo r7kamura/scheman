@@ -102,6 +102,7 @@ describe SchemaManager::Parsers::Mysql do
             `column3` INTEGER NULL,
             `column4` INTEGER PRIMARY KEY,
             `column5` INTEGER UNSIGNED,
+            `column6` VARCHAR(255) CHARACTER SET utf8,
             PRIMARY KEY (`id`)
           );
         EOS
@@ -137,6 +138,11 @@ describe SchemaManager::Parsers::Mysql do
                   name: "column5",
                   type: "integer",
                   qualifiers: [],
+                },
+                {
+                  name: "column6",
+                  type: "varchar",
+                  qualifiers: [:character_set],
                 },
               ],
               constraints: [

@@ -214,12 +214,16 @@ module SchemaManager
             null_qualifier |
             primary_key_qualifier |
             auto_increment_qualifier |
-            case_insensitive_str("character set") >> spaces >> identifier |
+            character_set_qualifier |
             case_insensitive_str("collate") >> spaces >> identifier |
             case_insensitive_str("unique key") |
             case_insensitive_str("unique index") |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:character_set_qualifier) do
+          (case_insensitive_str("character set") >> spaces >> identifier).as(:character_set_qualifier)
         end
 
         rule(:primary_key_qualifier) do
@@ -425,6 +429,11 @@ module SchemaManager
 
         rule(primary_key_qualifier: simple(:primary_key_qualifier)) do
           :primary_key
+        end
+
+        # TODO: Character set should have a variable of what charset it is
+        rule(character_set_qualifier: simple(:character_set_qualifier)) do
+          :character_set
         end
       end
     end
