@@ -28,7 +28,7 @@ describe SchemaManager::Parsers::Mysql do
 
           CREATE DATABASE database_name;
 
-          CREATE TABLE `recipes` (
+          CREATE TABLE `table1` (
             `column1` INTEGER NOT NULL AUTO INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`id`)
@@ -49,7 +49,7 @@ describe SchemaManager::Parsers::Mysql do
           },
           {
             create_table: {
-              name: "recipes",
+              name: "table1",
               fields: [
                 {
                   name: "column1",
@@ -106,14 +106,14 @@ describe SchemaManager::Parsers::Mysql do
 
     context "with NOT NULL" do
       let(:str) do
-        "CREATE TABLE `recipes` (`column1` INTEGER NOT NULL);"
+        "CREATE TABLE `table1` (`column1` INTEGER NOT NULL);"
       end
 
       it "succeeds in parse" do
         should == [
           {
             create_table: {
-              name: "recipes",
+              name: "table1",
               fields: [
                 {
                   name: "column1",
@@ -135,7 +135,7 @@ describe SchemaManager::Parsers::Mysql do
     context "with CREATE TABLE" do
       let(:str) do
         <<-EOS.strip_heredoc
-          CREATE TABLE `recipes` (
+          CREATE TABLE `table1` (
             `column1` INTEGER NOT NULL AUTO INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
             `column3` INTEGER NULL,
@@ -154,7 +154,7 @@ describe SchemaManager::Parsers::Mysql do
         should == [
           {
             create_table: {
-              name: "recipes",
+              name: "table1",
               fields: [
                 {
                   name: "column1",
