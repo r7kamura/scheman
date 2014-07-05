@@ -298,7 +298,7 @@ module SchemaManager
         end
 
         rule(:identifier) do
-          match('\w').repeat(1)
+          match('\w').repeat(1).as(:identifier)
         end
 
         rule(:quoted_identifier) do
@@ -372,6 +372,12 @@ module SchemaManager
         end
 
         # @example
+        # "utf8"
+        rule(identifier: simple(:identifier)) do
+          identifier.to_s
+        end
+
+        # @example
         # {
         #   name: "id",
         #   type: "integer"
@@ -439,10 +445,10 @@ module SchemaManager
           }
         end
 
-        # TODO: Character set should have a variable of what charset it is
         rule(character_set_qualifier: simple(:character_set_qualifier)) do
           {
             type: :character_set,
+            value: character_set_qualifier,
           }
         end
       end

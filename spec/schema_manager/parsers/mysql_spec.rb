@@ -175,6 +175,7 @@ describe SchemaManager::Parsers::Mysql do
                   qualifiers: [
                     {
                       type: :character_set,
+                      value: "utf8",
                     },
                   ],
                 },
