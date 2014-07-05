@@ -192,7 +192,7 @@ module SchemaManager
         rule(:field) do
           (
             comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
-              (spaces >> field_qualifier).repeat >>
+              (spaces >> field_qualifiers).maybe >>
               (spaces >> field_comment).maybe >>
               (spaces >> reference_definition).maybe >>
               (spaces >> on_update).maybe >>
@@ -204,12 +204,16 @@ module SchemaManager
           quoted_identifier | identifier
         end
 
+        rule(:field_qualifiers) do
+          (spaces? >> field_qualifier).repeat.as(:field_qualifiers)
+        end
+
         # TODO: default value, on update
         rule(:field_qualifier) do
-          case_insensitive_str("not null") |
+          not_null_qualifier |
             case_insensitive_str("null") |
             case_insensitive_str("primary key") |
-            case_insensitive_str("auto increment") |
+            auto_increment_qualifier |
             case_insensitive_str("unsigned") |
             case_insensitive_str("character set") >> spaces >> identifier |
             case_insensitive_str("collate") >> spaces >> identifier |
@@ -217,6 +221,14 @@ module SchemaManager
             case_insensitive_str("unique index") |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:not_null_qualifier) do
+          case_insensitive_str("not null").as(:not_null_qualifier)
+        end
+
+        rule(:auto_increment_qualifier) do
+          case_insensitive_str("auto increment").as(:auto_increment_qualifier)
         end
 
         rule(:field_comment) do
@@ -352,11 +364,17 @@ module SchemaManager
         # {
         #   name: "id",
         #   type: "integer"
+        #   qualifiers: [:not_null, :auto_increment],
         # }
-        rule(field_type_name: simple(:field_type_name), field_name: simple(:field_name)) do
+        rule(
+          field_type_name: simple(:field_type_name),
+          field_name: simple(:field_name),
+          field_qualifiers: sequence(:field_qualifiers)
+        ) do
           {
             name: field_name.to_s,
             type: field_type_name.to_s.downcase,
+            qualifiers: field_qualifiers,
           }
         end
 
@@ -384,6 +402,14 @@ module SchemaManager
             fields: fields,
             constraints: constraints,
           }
+        end
+
+        rule(auto_increment_qualifier: simple(:auto_increment_qualifier)) do
+          :auto_increment
+        end
+
+        rule(not_null_qualifier: simple(:not_null_qualifier)) do
+          :not_null
         end
       end
     end

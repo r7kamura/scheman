@@ -54,10 +54,12 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   name: "id",
                   type: "integer",
+                  qualifiers: [:not_null, :auto_increment],
                 },
                 {
                   name: "name",
                   type: "varchar",
+                  qualifiers: [:not_null],
                 },
               ],
               constraints: [
@@ -111,10 +113,12 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   name: "id",
                   type: "integer",
+                  qualifiers: [:not_null, :auto_increment],
                 },
                 {
                   name: "name",
                   type: "varchar",
+                  qualifiers: [:not_null],
                 },
               ],
               constraints: [
