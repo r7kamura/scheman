@@ -15,7 +15,7 @@ describe SchemaManager::Parsers::Mysql do
 
       DROP TABLE table_name;
 
-      CREATE database table_name;
+      CREATE DATABASE database_name;
 
       ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
 

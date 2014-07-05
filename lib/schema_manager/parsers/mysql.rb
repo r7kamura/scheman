@@ -59,7 +59,7 @@ module SchemaManager
           use |
           set |
           drop |
-          create |
+          create_database |
           alter |
           insert |
           delimiter_statement |
@@ -118,7 +118,7 @@ module SchemaManager
           case_insensitive_str("drop table") >> non(delimiter) >> eol
         end
 
-        rule(:create) do
+        rule(:create_database) do
           case_insensitive_str("create database") >> non(delimiter) >> eol
         end
 
