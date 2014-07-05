@@ -75,7 +75,10 @@ describe SchemaManager::Parsers::Mysql do
               ],
               constraints: [
                 {
-                  primary_key: "id",
+                  primary_key: {
+                    column: "id",
+                    type: nil,
+                  },
                 },
               ],
             },
@@ -220,6 +223,46 @@ describe SchemaManager::Parsers::Mysql do
       end
     end
 
+    context "with PRIMARY KEY constraint" do
+      let(:str) do
+        <<-EOS.strip_heredoc
+          CREATE TABLE `table1` (
+            `column1` INTEGER,
+            PRIMARY KEY (`column1`)
+          );
+        EOS
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:constraints][0].should == {
+          primary_key: {
+            column: "column1",
+            type: nil,
+          },
+        }
+      end
+    end
+
+    context "with PRIMARY KEY constraint with index type" do
+      let(:str) do
+        <<-EOS.strip_heredoc
+          CREATE TABLE `table1` (
+            `column1` INTEGER,
+            PRIMARY KEY btree (`column1`)
+          );
+        EOS
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:constraints][0].should == {
+          primary_key: {
+            column: "column1",
+            type: "btree",
+          },
+        }
+      end
+    end
+
     context "with CREATE TABLE" do
       let(:str) do
         <<-EOS.strip_heredoc
@@ -251,7 +294,10 @@ describe SchemaManager::Parsers::Mysql do
               ],
               constraints: [
                 {
-                  primary_key: "column1",
+                  primary_key: {
+                    column: "column1",
+                    type: nil,
+                  },
                 },
               ],
             },

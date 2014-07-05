@@ -175,10 +175,15 @@ module SchemaManager
 
         rule(:primary_key_definition) do
           (
-            case_insensitive_str("primary key") >> (spaces >> index_type).maybe >>
-              spaces >> parenthetical(comma_separated(name_with_optional_values)) >>
-              (spaces >> index_type).maybe
+            case_insensitive_str("primary key") >>
+              optional_index_type >>
+              spaces >> parenthetical(comma_separated(key_name_with_optional_values)) >>
+              optional_index_type
           ).as(:primary_key)
+        end
+
+        rule(:optional_index_type) do
+          (spaces >> index_type).maybe
         end
 
         rule(:unique_key_definition) do
@@ -278,8 +283,12 @@ module SchemaManager
           case_insensitive_str("binary") | case_insensitive_str("unsigned") | case_insensitive_str("zerofill")
         end
 
-        rule(:name_with_optional_values) do
-          quoted_identifier >> (spaces >> parenthetical(comma_separated(value))).maybe
+        rule(:key_name_with_optional_values) do
+          key_name >> (spaces >> parenthetical(comma_separated(value))).maybe
+        end
+
+        rule(:key_name) do
+          quoted_identifier.as(:key_name)
         end
 
         # TODO: Replace string with another proper pattern
@@ -308,7 +317,9 @@ module SchemaManager
         end
 
         rule(:index_type) do
-          case_insensitive_str("btree") | case_insensitive_str("hash") | case_insensitive_str("rtree")
+          (
+            case_insensitive_str("btree") | case_insensitive_str("hash") | case_insensitive_str("rtree")
+          ).as(:index_type)
         end
 
         rule(:identifier) do
@@ -484,6 +495,21 @@ module SchemaManager
         rule(key_qualifier: simple(:key_qualifier)) do
           {
             type: :key,
+          }
+        end
+
+        rule(primary_key: subtree(:primary_key)) do
+          {
+            primary_key: {
+              column: primary_key[:key_name],
+              type: primary_key[:index_type].try(:to_s),
+            },
+          }
+        end
+
+        rule(database_name: simple(:database_name)) do
+          {
+            database_name: database_name.to_s,
           }
         end
       end
