@@ -143,7 +143,7 @@ module SchemaManager
           case_insensitive_str("database") | case_insensitive_str("schema")
         end
 
-        rule(:word_key) do
+        rule(:word_index) do
           case_insensitive_str("key") | case_insensitive_str("index")
         end
 
@@ -177,7 +177,7 @@ module SchemaManager
           (
             case_insensitive_str("primary key") >>
               optional_index_type >>
-              spaces >> parenthetical(comma_separated(key_name_with_optional_values)) >>
+              spaces >> parenthetical(comma_separated(column_name_with_optional_values)) >>
               optional_index_type
           ).as(:primary_key)
         end
@@ -195,7 +195,33 @@ module SchemaManager
         end
 
         rule(:index) do
-          str("TODO")
+          (normal_index | abnormal_index).as(:index)
+        end
+
+        rule(:normal_index) do
+          word_index >> spaces >> index_name >>
+            optional_using_index_type >>
+            parenthetical(comma_separated(column_name_with_optional_values)) >>
+            optional_using_index_type
+        end
+
+        rule(:optional_using_index_type) do
+          spaces >> (using_index_type >> spaces).maybe
+        end
+
+        rule(:using_index_type) do
+          case_insensitive_str("using") >> spaces >> index_type
+        end
+
+        rule(:index_name) do
+          identifier.as(:index_name)
+        end
+
+        rule(:abnormal_index) do
+          (case_insensitive_str("fulltext") | case_insensitive_str("spatial")) >>
+            spaces >> (word_index >> spaces).maybe >>
+            (index_name >> spaces).maybe >>
+            parenthetical(comma_separated(column_name_with_optional_values))
         end
 
         rule(:field) do
@@ -230,11 +256,11 @@ module SchemaManager
         end
 
         rule(:key_qualifier) do
-          word_key.as(:key_qualifier)
+          word_index.as(:key_qualifier)
         end
 
         rule(:unique_key_qualifier) do
-          (case_insensitive_str("unique ") >> word_key).as(:unique_key_qualifier)
+          (case_insensitive_str("unique ") >> word_index).as(:unique_key_qualifier)
         end
 
         rule(:collate_qualifier) do
@@ -283,12 +309,12 @@ module SchemaManager
           case_insensitive_str("binary") | case_insensitive_str("unsigned") | case_insensitive_str("zerofill")
         end
 
-        rule(:key_name_with_optional_values) do
-          key_name >> (spaces >> parenthetical(comma_separated(value))).maybe
+        rule(:column_name_with_optional_values) do
+          column_name >> (spaces >> parenthetical(comma_separated(value))).maybe
         end
 
-        rule(:key_name) do
-          quoted_identifier.as(:key_name)
+        rule(:column_name) do
+          quoted_identifier.as(:column_name)
         end
 
         # TODO: Replace string with another proper pattern
@@ -420,16 +446,6 @@ module SchemaManager
           }
         end
 
-        # @example
-        # {
-        #   name: "recipes",
-        #   fields: [
-        #     {
-        #       name: "id",
-        #       type: "integer"
-        #     }
-        #   ]
-        # }
         rule(table_name: simple(:table_name), table_components: subtree(:table_components)) do
           components = Array.wrap(table_components)
 
@@ -441,10 +457,15 @@ module SchemaManager
             component[:constraint]
           end.compact
 
+          indices = components.map do |component|
+            component[:index]
+          end.compact
+
           {
             name: table_name,
             fields: fields,
             constraints: constraints,
+            indices: indices,
           }
         end
 
@@ -501,7 +522,7 @@ module SchemaManager
         rule(primary_key: subtree(:primary_key)) do
           {
             primary_key: {
-              column: primary_key[:key_name],
+              column: primary_key[:column_name],
               type: primary_key[:index_type].try(:to_s).try(:downcase),
             },
           }
@@ -510,6 +531,16 @@ module SchemaManager
         rule(database_name: simple(:database_name)) do
           {
             database_name: database_name.to_s,
+          }
+        end
+
+        rule(index: subtree(:index)) do
+          {
+            index: {
+              column: index[:column_name].to_s,
+              name: index[:index_name].to_s,
+              type: index[:index_type].try(:to_s).try(:downcase),
+            },
           }
         end
       end

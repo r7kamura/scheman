@@ -73,6 +73,7 @@ describe SchemaManager::Parsers::Mysql do
                   ],
                 },
               ],
+              indices: [],
               constraints: [
                 {
                   primary_key: {
@@ -283,6 +284,22 @@ describe SchemaManager::Parsers::Mysql do
       end
     end
 
+    context "with KEY index definition" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`) USING BTREE);"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:indices].should == [
+          {
+            column: "column1",
+            name: "index1",
+            type: "btree",
+          },
+        ]
+      end
+    end
+
     context "with CREATE TABLE" do
       let(:str) do
         <<-EOS.strip_heredoc
@@ -312,6 +329,7 @@ describe SchemaManager::Parsers::Mysql do
                   ],
                 },
               ],
+              indices: [],
               constraints: [
                 {
                   primary_key: {
