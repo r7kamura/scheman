@@ -100,6 +100,7 @@ describe SchemaManager::Parsers::Mysql do
             `column1` INTEGER NOT NULL AUTO INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
             `column3` INTEGER NULL,
+            `column4` INTEGER PRIMARY KEY,
             PRIMARY KEY (`id`)
           );
         EOS
@@ -125,6 +126,11 @@ describe SchemaManager::Parsers::Mysql do
                   name: "column3",
                   type: "integer",
                   qualifiers: [:null],
+                },
+                {
+                  name: "column4",
+                  type: "integer",
+                  qualifiers: [:primary_key],
                 },
               ],
               constraints: [

@@ -212,7 +212,7 @@ module SchemaManager
         rule(:field_qualifier) do
           not_null_qualifier |
             null_qualifier |
-            case_insensitive_str("primary key") |
+            primary_key_qualifier |
             auto_increment_qualifier |
             case_insensitive_str("unsigned") |
             case_insensitive_str("character set") >> spaces >> identifier |
@@ -221,6 +221,10 @@ module SchemaManager
             case_insensitive_str("unique index") |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:primary_key_qualifier) do
+          case_insensitive_str("primary key").as(:primary_key_qualifier)
         end
 
         rule(:null_qualifier) do
@@ -418,6 +422,10 @@ module SchemaManager
 
         rule(null_qualifier: simple(:null_qualifier)) do
           :null
+        end
+
+        rule(primary_key_qualifier: simple(:primary_key_qualifier)) do
+          :primary_key
         end
       end
     end
