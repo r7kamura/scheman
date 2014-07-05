@@ -78,7 +78,7 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   primary_key: {
                     column: "id",
-                    type: nil,
+                    structure: nil,
                   },
                 },
               ],
@@ -238,13 +238,13 @@ describe SchemaManager::Parsers::Mysql do
         subject[0][:create_table][:constraints][0].should == {
           primary_key: {
             column: "column1",
-            type: nil,
+            structure: nil,
           },
         }
       end
     end
 
-    context "with PRIMARY KEY constraint with index type" do
+    context "with PRIMARY KEY constraint with index structure" do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
@@ -258,13 +258,13 @@ describe SchemaManager::Parsers::Mysql do
         subject[0][:create_table][:constraints][0].should == {
           primary_key: {
             column: "column1",
-            type: "btree",
+            structure: "btree",
           },
         }
       end
     end
 
-    context "with PRIMARY KEY constraint with index type behind" do
+    context "with PRIMARY KEY constraint with index structure behind" do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
@@ -278,7 +278,7 @@ describe SchemaManager::Parsers::Mysql do
         subject[0][:create_table][:constraints][0].should == {
           primary_key: {
             column: "column1",
-            type: "btree",
+            structure: "btree",
           },
         }
       end
@@ -286,7 +286,7 @@ describe SchemaManager::Parsers::Mysql do
 
     context "with KEY index definition" do
       let(:str) do
-        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`) USING BTREE);"
+        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`));"
       end
 
       it "succeeds in parse" do
@@ -294,9 +294,39 @@ describe SchemaManager::Parsers::Mysql do
           {
             column: "column1",
             name: "index1",
-            type: "btree",
+            structure: nil,
           },
         ]
+      end
+    end
+
+    context "with USING BTREE" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 USING BTREE (`column1`));"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:indices][0][:structure].should == "btree"
+      end
+    end
+
+    context "with USING BTREE after column name" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`) USING BTREE);"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:indices][0][:structure].should == "btree"
+      end
+    end
+
+    context "with FULLTEXT" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER, FULLTEXT index1 (`column1`));"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:indices][0][:structure].should == nil
       end
     end
 
@@ -334,7 +364,7 @@ describe SchemaManager::Parsers::Mysql do
                 {
                   primary_key: {
                     column: "column1",
-                    type: nil,
+                    structure: nil,
                   },
                 },
               ],

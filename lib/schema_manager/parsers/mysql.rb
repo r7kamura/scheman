@@ -176,14 +176,14 @@ module SchemaManager
         rule(:primary_key_definition) do
           (
             case_insensitive_str("primary key") >>
-              optional_index_type >>
+              optional_index_structure >>
               spaces >> parenthetical(comma_separated(column_name_with_optional_values)) >>
-              optional_index_type
+              optional_index_structure
           ).as(:primary_key)
         end
 
-        rule(:optional_index_type) do
-          (spaces >> index_type).maybe
+        rule(:optional_index_structure) do
+          (spaces >> index_structure).maybe
         end
 
         rule(:unique_key_definition) do
@@ -200,17 +200,17 @@ module SchemaManager
 
         rule(:normal_index) do
           word_index >> spaces >> index_name >>
-            optional_using_index_type >>
+            optional_using_index_structure >>
             parenthetical(comma_separated(column_name_with_optional_values)) >>
-            optional_using_index_type
+            optional_using_index_structure
         end
 
-        rule(:optional_using_index_type) do
-          spaces >> (using_index_type >> spaces).maybe
+        rule(:optional_using_index_structure) do
+          spaces >> (using_index_structure >> spaces).maybe
         end
 
-        rule(:using_index_type) do
-          case_insensitive_str("using") >> spaces >> index_type
+        rule(:using_index_structure) do
+          case_insensitive_str("using") >> spaces >> index_structure
         end
 
         rule(:index_name) do
@@ -342,10 +342,10 @@ module SchemaManager
           match("e|E") >> unsigned_integer
         end
 
-        rule(:index_type) do
+        rule(:index_structure) do
           (
             case_insensitive_str("btree") | case_insensitive_str("hash") | case_insensitive_str("rtree")
-          ).as(:index_type)
+          ).as(:index_structure)
         end
 
         rule(:identifier) do
@@ -523,7 +523,7 @@ module SchemaManager
           {
             primary_key: {
               column: primary_key[:column_name],
-              type: primary_key[:index_type].try(:to_s).try(:downcase),
+              structure: primary_key[:index_structure].try(:to_s).try(:downcase),
             },
           }
         end
@@ -539,7 +539,7 @@ module SchemaManager
             index: {
               column: index[:column_name].to_s,
               name: index[:index_name].to_s,
-              type: index[:index_type].try(:to_s).try(:downcase),
+              structure: index[:index_structure].try(:to_s).try(:downcase),
             },
           }
         end
