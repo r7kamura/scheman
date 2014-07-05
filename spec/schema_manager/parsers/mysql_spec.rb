@@ -115,6 +115,7 @@ describe SchemaManager::Parsers::Mysql do
             `column5` INTEGER UNSIGNED,
             `column6` VARCHAR(255) CHARACTER SET utf8,
             `column7` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci,
+            `column8` INTEGER UNIQUE KEY,
             PRIMARY KEY (`id`)
           );
         EOS
@@ -191,6 +192,15 @@ describe SchemaManager::Parsers::Mysql do
                     {
                       type: :collate,
                       value: "utf8_general_ci",
+                    },
+                  ],
+                },
+                {
+                  name: "column8",
+                  type: "integer",
+                  qualifiers: [
+                    {
+                      type: :unique_key,
                     },
                   ],
                 },

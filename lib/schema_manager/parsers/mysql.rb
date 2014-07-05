@@ -143,6 +143,10 @@ module SchemaManager
           case_insensitive_str("database") | case_insensitive_str("schema")
         end
 
+        rule(:word_key) do
+          case_insensitive_str("key") | case_insensitive_str("index")
+        end
+
         rule(:create_table) do
           create_table_beginning >> spaces >> table_name >>
             spaces >> table_components >> eol
@@ -216,10 +220,13 @@ module SchemaManager
             auto_increment_qualifier |
             character_set_qualifier |
             collate_qualifier |
-            case_insensitive_str("unique key") |
-            case_insensitive_str("unique index") |
+            unique_key_qualifier |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:unique_key_qualifier) do
+          (case_insensitive_str("unique ") >> word_key).as(:unique_key_qualifier)
         end
 
         rule(:collate_qualifier) do
@@ -460,6 +467,12 @@ module SchemaManager
           {
             type: :collate,
             value: collate_qualifier,
+          }
+        end
+
+        rule(unique_key_qualifier: simple(:unique_key_qualifier)) do
+          {
+            type: :unique_key,
           }
         end
       end
