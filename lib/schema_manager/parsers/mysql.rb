@@ -502,7 +502,7 @@ module SchemaManager
           {
             primary_key: {
               column: primary_key[:key_name],
-              type: primary_key[:index_type].try(:to_s),
+              type: primary_key[:index_type].try(:to_s).try(:downcase),
             },
           }
         end

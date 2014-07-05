@@ -248,7 +248,7 @@ describe SchemaManager::Parsers::Mysql do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
             `column1` INTEGER,
-            PRIMARY KEY btree (`column1`)
+            PRIMARY KEY BTREE (`column1`)
           );
         EOS
       end
