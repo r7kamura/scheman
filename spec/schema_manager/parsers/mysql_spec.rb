@@ -28,6 +28,11 @@ describe SchemaManager::Parsers::Mysql do
 
           CREATE DATABASE database_name;
 
+          CREATE TABLE `recipes` (
+            `id` INTEGER PRIMARY KEY NOT NULL AUTO INCREMENT,
+            `name` VARCHAR(255) NOT NULL
+          );
+
           ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
 
           INSERT INTO table_name (column_name) VALUES ('value');

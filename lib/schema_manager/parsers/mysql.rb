@@ -72,7 +72,7 @@ module SchemaManager
           set |
           drop |
           create_database |
-          create_table |
+          create_table.as(:create_table) |
           alter |
           insert |
           delimiter_statement |
@@ -141,7 +141,7 @@ module SchemaManager
 
         rule(:create_table) do
           create_table_beginning >> spaces >> table_name.as(:table_name) >>
-            spaces >> parenthetical(comma_separated(create_definition)) >> eol
+            spaces >> parenthetical(comma_separated(create_definition)).as(:table_components) >> eol
         end
 
         rule(:table_name) do
@@ -180,7 +180,7 @@ module SchemaManager
         end
 
         rule(:field) do
-          comment.repeat >> field_name >> spaces >> data_type >>
+          comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
             (spaces >> field_qualifier).repeat >>
             (spaces >> field_comment).maybe >>
             (spaces >> reference_definition).maybe >>
@@ -215,8 +215,10 @@ module SchemaManager
           str("TODO")
         end
 
-        rule(:data_type) do
-          identifier >> (spaces >> parenthetical(comma_separated(value))).repeat >> (spaces >> type_qualifier).repeat
+        rule(:field_type) do
+          identifier.as(:field_type_name) >>
+            (spaces >> parenthetical(comma_separated(value))).repeat >>
+            (spaces >> type_qualifier).repeat
         end
 
         rule(:type_qualifier) do
@@ -308,16 +310,15 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
-        # rule(database_name: simple(:database_name)) do
-        #   DatabaseName.new(database_name)
-        # end
-
-        rule(statements: simple(:statements)) do
+        rule(table_name: simple(:name), table_components: subtree(:components)) do
           {
-            database_names: statements,
-            procedures: "TODO",
-            tables: "TODO",
-            views: "TODO",
+            name: name.to_s.gsub(/\A`(.+)`\z/, '\1'),
+            fields: components.map do |component|
+              {
+                name: component[:field_name].to_s,
+                type: component[:field_type_name].to_s.downcase,
+              }
+            end
           }
         end
       end
