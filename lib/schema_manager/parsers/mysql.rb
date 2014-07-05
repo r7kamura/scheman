@@ -214,7 +214,6 @@ module SchemaManager
             null_qualifier |
             primary_key_qualifier |
             auto_increment_qualifier |
-            case_insensitive_str("unsigned") |
             case_insensitive_str("character set") >> spaces >> identifier |
             case_insensitive_str("collate") >> spaces >> identifier |
             case_insensitive_str("unique key") |
