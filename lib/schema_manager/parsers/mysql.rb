@@ -263,9 +263,11 @@ module SchemaManager
         end
 
         rule(:quoted_identifier) do
-          single_quoted(match("[^']").repeat(1)) |
-            double_quoted(match('[^"]').repeat(1)) |
-            back_quoted(match("[^`]").repeat(1))
+          (
+            single_quoted(match("[^']").repeat(1)) |
+              double_quoted(match('[^"]').repeat(1)) |
+              back_quoted(match("[^`]").repeat(1))
+          ).as(:quoted_identifier)
         end
 
         rule(:insert) do
@@ -310,9 +312,13 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
+        rule(quoted_identifier: simple(:identifier)) do
+          identifier.to_s.gsub(/\A`(.+)`\z/, '\1')
+        end
+
         rule(table_name: simple(:name), table_components: subtree(:components)) do
           {
-            name: name.to_s.gsub(/\A`(.+)`\z/, '\1'),
+            name: name,
             fields: components.map do |component|
               {
                 name: component[:field_name].to_s,
