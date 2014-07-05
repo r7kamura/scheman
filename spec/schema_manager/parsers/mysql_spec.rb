@@ -17,6 +17,8 @@ describe SchemaManager::Parsers::Mysql do
 
       CREATE database table_name;
 
+      ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
+
       DELIMITER //
     EOS
   end
