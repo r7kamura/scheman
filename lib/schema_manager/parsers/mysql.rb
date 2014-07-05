@@ -216,9 +216,13 @@ module SchemaManager
         end
 
         rule(:field_type) do
-          identifier.as(:field_type_name) >>
+          field_type_name >>
             (spaces >> parenthetical(comma_separated(value))).repeat >>
             (spaces >> type_qualifier).repeat
+        end
+
+        rule(:field_type_name) do
+          identifier.as(:field_type_name)
         end
 
         rule(:type_qualifier) do
@@ -312,14 +316,31 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
-        rule(quoted_identifier: simple(:identifier)) do
-          identifier.to_s.gsub(/\A`(.+)`\z/, '\1')
+
+        # "`id`" => "id"
+        rule(quoted_identifier: simple(:quoted_identifier)) do
+          quoted_identifier.to_s.gsub(/\A`(.+)`\z/, '\1')
         end
 
-        rule(table_name: simple(:name), table_components: subtree(:components)) do
+        # "INTEGER" => "integer"
+        rule(field_type_name: simple(:field_type_name)) do
+          field_type_name.to_s.downcase
+        end
+
+        # @example
+        # {
+        #   name: "recipes",
+        #   fields: [
+        #     {
+        #       name: "id",
+        #       type: "integer"
+        #     }
+        #   ]
+        # }
+        rule(table_name: simple(:table_name), table_components: subtree(:table_components)) do
           {
-            name: name,
-            fields: components.map do |component|
+            name: table_name,
+            fields: table_components.map do |component|
               {
                 name: component[:field_name].to_s,
                 type: component[:field_type_name].to_s.downcase,
