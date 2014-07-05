@@ -328,6 +328,11 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
+        # @example
+        # [
+        #   { ... },
+        #   { ... }
+        # ]
         rule(statements: subtree(:statements)) do
           case statements
           when Array
