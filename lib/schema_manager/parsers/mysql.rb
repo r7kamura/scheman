@@ -221,8 +221,11 @@ module SchemaManager
             character_set_qualifier |
             collate_qualifier |
             unique_key_qualifier |
-            case_insensitive_str("key") |
-            case_insensitive_str("index")
+            key_qualifier
+        end
+
+        rule(:key_qualifier) do
+          word_key.as(:key_qualifier)
         end
 
         rule(:unique_key_qualifier) do
@@ -473,6 +476,12 @@ module SchemaManager
         rule(unique_key_qualifier: simple(:unique_key_qualifier)) do
           {
             type: :unique_key,
+          }
+        end
+
+        rule(key_qualifier: simple(:key_qualifier)) do
+          {
+            type: :key,
           }
         end
       end
