@@ -37,15 +37,27 @@ module SchemaManager
         end
 
         def quoted(value)
+          single_quoted(value) | double_quoted(value) | back_quoted(value)
+        end
+
+        def single_quoted(value)
+          str("'") >> value >> str("'")
+        end
+
+        def double_quoted(value)
+          str('"') >> value >> str('"')
+        end
+
+        def back_quoted(value)
           str("`") >> value >> str("`")
         end
 
         def parenthetical(value)
-          str("(") >> value >> str(")")
+          str("(") >> spaces? >> value >> spaces? >> str(")")
         end
 
         def comma_separated(value)
-          value >> (str(",") >> value).repeat
+          value >> (str(",") >> spaces >> value).repeat
         end
 
         root(:statements)
@@ -60,6 +72,7 @@ module SchemaManager
           set |
           drop |
           create_database |
+          create_table |
           alter |
           insert |
           delimiter_statement |
@@ -94,10 +107,6 @@ module SchemaManager
           any.repeat(1)
         end
 
-        rule(:name) do
-          quoted(string) | string
-        end
-
         rule(:eol) do
           delimiter >> spaces?
         end
@@ -128,6 +137,133 @@ module SchemaManager
 
         rule(:word_database) do
           case_insensitive_str("database") | case_insensitive_str("schema")
+        end
+
+        rule(:create_table) do
+          create_table_beginning >> spaces >> table_name.as(:table_name) >>
+            spaces >> parenthetical(comma_separated(create_definition)) >> eol
+        end
+
+        rule(:table_name) do
+          quoted_identifier | identifier
+        end
+
+        rule(:create_table_beginning) do
+          case_insensitive_str("create") >> case_insensitive_str(" temporary").maybe >>
+            case_insensitive_str(" table") >> case_insensitive_str(" if not exists").maybe
+        end
+
+        rule(:create_definition) do
+          constraint | index | field | comment
+        end
+
+        rule(:constraint) do
+          primary_key_definition | unique_key_definition | foreign_key_definition
+        end
+
+        rule(:primary_key_definition) do
+          case_insensitive_str("primary key") >> (spaces >> index_type).maybe >>
+            spaces >> parenthetical(comma_separated(name_with_optional_values)) >>
+            (spaces >> index_type).maybe
+        end
+
+        rule(:unique_key_definition) do
+          str("TODO")
+        end
+
+        rule(:foreign_key_definition) do
+          str("TODO")
+        end
+
+        rule(:index) do
+          str("TODO")
+        end
+
+        rule(:field) do
+          comment.repeat >> field_name >> spaces >> data_type >>
+            (spaces >> field_qualifier).repeat >>
+            (spaces >> field_comment).maybe >>
+            (spaces >> reference_definition).maybe >>
+            (spaces >> on_update).maybe >>
+            comment.maybe
+        end
+
+        rule(:field_name) do
+          quoted_identifier | identifier
+        end
+
+        # TODO: default value, on update
+        rule(:field_qualifier) do
+          case_insensitive_str("not null") |
+            case_insensitive_str("null") |
+            case_insensitive_str("primary key") |
+            case_insensitive_str("auto increment") |
+            case_insensitive_str("unsigned") |
+            case_insensitive_str("character set") >> spaces >> identifier |
+            case_insensitive_str("collate") >> spaces >> identifier |
+            case_insensitive_str("unique key") |
+            case_insensitive_str("unique index") |
+            case_insensitive_str("key") |
+            case_insensitive_str("index")
+        end
+
+        rule(:field_comment) do
+          case_insensitive_str("comment") >> spaces >> single_quoted(match("[^']"))
+        end
+
+        rule(:on_update) do
+          str("TODO")
+        end
+
+        rule(:data_type) do
+          identifier >> (spaces >> parenthetical(comma_separated(value))).repeat >> (spaces >> type_qualifier).repeat
+        end
+
+        rule(:type_qualifier) do
+          case_insensitive_str("binary") | case_insensitive_str("unsigned") | case_insensitive_str("zerofill")
+        end
+
+        rule(:name_with_optional_values) do
+          identifier >> spaces >> parenthetical(comma_separated(value))
+        end
+
+        # TODO: Replace string with another proper pattern
+        rule(:value) do
+          float_number | quoted(string) | str("NULL")
+        end
+
+        rule(:float_number) do
+          base_number >> exponent_number.maybe
+        end
+
+        rule(:sign) do
+          match("[-+]")
+        end
+
+        rule(:unsigned_integer) do
+          match('\d').repeat(1)
+        end
+
+        rule(:base_number) do
+          sign.maybe >> str(".").maybe >> unsigned_integer
+        end
+
+        rule(:exponent_number) do
+          match("e|E") >> unsigned_integer
+        end
+
+        rule(:index_type) do
+          case_insensitive_str("btree") | case_insensitive_str("hash") | case_insensitive_str("rtree")
+        end
+
+        rule(:identifier) do
+          match('\w').repeat(1)
+        end
+
+        rule(:quoted_identifier) do
+          single_quoted(match("[^']").repeat(1)) |
+            double_quoted(match('[^"]').repeat(1)) |
+            back_quoted(match("[^`]").repeat(1))
         end
 
         rule(:insert) do

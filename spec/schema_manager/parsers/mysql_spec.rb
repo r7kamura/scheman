@@ -10,7 +10,7 @@ describe SchemaManager::Parsers::Mysql do
       begin
         described_class.parse(str)
       rescue => exception
-        puts exception.cause.ascii_tree
+        puts exception.cause.ascii_tree rescue nil
         raise
       end
     end
@@ -48,6 +48,18 @@ describe SchemaManager::Parsers::Mysql do
     context "with CREATE SCHEMA" do
       let(:str) do
         "CREATE SCHEMA database_name;"
+      end
+      it { should be_true }
+    end
+
+    context "with CREATE TABLE" do
+      let(:str) do
+        <<-EOS.strip_heredoc
+          CREATE TABLE `recipes` (
+            `id` INTEGER PRIMARY KEY NOT NULL AUTO INCREMENT,
+            `name` VARCHAR(255) NOT NULL
+          );
+        EOS
       end
       it { should be_true }
     end
