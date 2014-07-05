@@ -19,6 +19,8 @@ describe SchemaManager::Parsers::Mysql do
 
       ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
 
+      INSERT INTO table_name (column_name) VALUES ('value');
+
       DELIMITER //
     EOS
   end
