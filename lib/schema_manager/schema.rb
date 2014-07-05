@@ -1,6 +1,7 @@
 module SchemaManager
   class Schema
-    def initialize(*)
+    def initialize(raw)
+      @raw = raw
     end
   end
 end

@@ -25,19 +25,14 @@ describe SchemaManager::Parsers::Mysql do
     EOS
   end
 
-  describe "#parse" do
-    subject do
-      instance.parse(str)
-    end
-
-    it "returns a SchemaManager::Schema" do
-      should be_a SchemaManager::Schema
-    end
-  end
-
   describe ".parse" do
     subject do
-      described_class.parse(str) rescue puts $!.cause.ascii_tree
+      begin
+        described_class.parse(str)
+      rescue => exception
+        puts exception.cause.ascii_tree
+        raise
+      end
     end
 
     it "can parse MySQL syntax" do
