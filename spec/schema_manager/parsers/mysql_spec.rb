@@ -97,8 +97,9 @@ describe SchemaManager::Parsers::Mysql do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `recipes` (
-            `id` INTEGER NOT NULL AUTO INCREMENT,
-            `name` VARCHAR(255) NOT NULL,
+            `column1` INTEGER NOT NULL AUTO INCREMENT,
+            `column2` VARCHAR(255) NOT NULL,
+            `column3` INTEGER NULL,
             PRIMARY KEY (`id`)
           );
         EOS
@@ -111,14 +112,19 @@ describe SchemaManager::Parsers::Mysql do
               name: "recipes",
               fields: [
                 {
-                  name: "id",
+                  name: "column1",
                   type: "integer",
                   qualifiers: [:not_null, :auto_increment],
                 },
                 {
-                  name: "name",
+                  name: "column2",
                   type: "varchar",
                   qualifiers: [:not_null],
+                },
+                {
+                  name: "column3",
+                  type: "integer",
+                  qualifiers: [:null],
                 },
               ],
               constraints: [

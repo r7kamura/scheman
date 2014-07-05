@@ -211,7 +211,7 @@ module SchemaManager
         # TODO: default value, on update
         rule(:field_qualifier) do
           not_null_qualifier |
-            case_insensitive_str("null") |
+            null_qualifier |
             case_insensitive_str("primary key") |
             auto_increment_qualifier |
             case_insensitive_str("unsigned") |
@@ -221,6 +221,10 @@ module SchemaManager
             case_insensitive_str("unique index") |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:null_qualifier) do
+          case_insensitive_str("null").as(:null_qualifier)
         end
 
         rule(:not_null_qualifier) do
@@ -410,6 +414,10 @@ module SchemaManager
 
         rule(not_null_qualifier: simple(:not_null_qualifier)) do
           :not_null
+        end
+
+        rule(null_qualifier: simple(:null_qualifier)) do
+          :null
         end
       end
     end
