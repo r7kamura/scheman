@@ -29,7 +29,7 @@ describe SchemaManager::Parsers::Mysql do
           CREATE DATABASE database_name;
 
           CREATE TABLE `recipes` (
-            `id` INTEGER PRIMARY KEY NOT NULL AUTO INCREMENT,
+            `id` INTEGER NOT NULL AUTO INCREMENT,
             `name` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`id`)
           );
@@ -95,7 +95,7 @@ describe SchemaManager::Parsers::Mysql do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `recipes` (
-            `id` INTEGER PRIMARY KEY NOT NULL AUTO INCREMENT,
+            `id` INTEGER NOT NULL AUTO INCREMENT,
             `name` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`id`)
           );
