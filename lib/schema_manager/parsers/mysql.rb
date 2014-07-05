@@ -40,6 +40,10 @@ module SchemaManager
           single_quoted(value) | double_quoted(value) | back_quoted(value)
         end
 
+        def quoted_string
+          single_quoted(non(str("'"))) | double_quoted(non(str('"'))) | back_quoted(non(str("`")))
+        end
+
         def single_quoted(value)
           str("'") >> value >> str("'")
         end
@@ -140,12 +144,16 @@ module SchemaManager
         end
 
         rule(:create_table) do
-          create_table_beginning >> spaces >> table_name.as(:table_name) >>
-            spaces >> parenthetical(comma_separated(create_definition)).as(:table_components) >> eol
+          create_table_beginning >> spaces >> table_name >>
+            spaces >> table_components >> eol
+        end
+
+        rule(:table_components) do
+          parenthetical(comma_separated(create_definition)).as(:table_components)
         end
 
         rule(:table_name) do
-          quoted_identifier | identifier
+          (quoted_identifier | identifier).as(:table_name)
         end
 
         rule(:create_table_beginning) do
@@ -158,7 +166,7 @@ module SchemaManager
         end
 
         rule(:constraint) do
-          primary_key_definition | unique_key_definition | foreign_key_definition
+          (primary_key_definition | unique_key_definition | foreign_key_definition).as(:constraint)
         end
 
         rule(:primary_key_definition) do
@@ -180,12 +188,14 @@ module SchemaManager
         end
 
         rule(:field) do
-          comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
-            (spaces >> field_qualifier).repeat >>
-            (spaces >> field_comment).maybe >>
-            (spaces >> reference_definition).maybe >>
-            (spaces >> on_update).maybe >>
-            comment.maybe
+          (
+            comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
+              (spaces >> field_qualifier).repeat >>
+              (spaces >> field_comment).maybe >>
+              (spaces >> reference_definition).maybe >>
+              (spaces >> on_update).maybe >>
+              comment.maybe
+          ).as(:field)
         end
 
         rule(:field_name) do
@@ -230,12 +240,12 @@ module SchemaManager
         end
 
         rule(:name_with_optional_values) do
-          identifier >> spaces >> parenthetical(comma_separated(value))
+          quoted(identifier) >> (spaces >> parenthetical(comma_separated(value))).maybe
         end
 
         # TODO: Replace string with another proper pattern
         rule(:value) do
-          float_number | quoted(string) | str("NULL")
+          float_number | quoted_string | str("NULL")
         end
 
         rule(:float_number) do
@@ -317,14 +327,22 @@ module SchemaManager
 
       class ParsletTransform < Parslet::Transform
 
-        # "`id`" => "id"
+        # @example
+        # "id"
         rule(quoted_identifier: simple(:quoted_identifier)) do
           quoted_identifier.to_s.gsub(/\A`(.+)`\z/, '\1')
         end
 
-        # "INTEGER" => "integer"
-        rule(field_type_name: simple(:field_type_name)) do
-          field_type_name.to_s.downcase
+        # @example
+        # {
+        #   name: "id",
+        #   type: "integer"
+        # }
+        rule(field_type_name: simple(:field_type_name), field_name: simple(:field_name)) do
+          {
+            name: field_name.to_s,
+            type: field_type_name.to_s.downcase,
+          }
         end
 
         # @example
@@ -341,11 +359,10 @@ module SchemaManager
           {
             name: table_name,
             fields: table_components.map do |component|
-              {
-                name: component[:field_name].to_s,
-                type: component[:field_type_name].to_s.downcase,
-              }
-            end
+              if field = component[:field]
+                field
+              end
+            end.compact
           }
         end
       end
