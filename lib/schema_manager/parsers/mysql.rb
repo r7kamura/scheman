@@ -215,11 +215,15 @@ module SchemaManager
             primary_key_qualifier |
             auto_increment_qualifier |
             character_set_qualifier |
-            case_insensitive_str("collate") >> spaces >> identifier |
+            collate_qualifier |
             case_insensitive_str("unique key") |
             case_insensitive_str("unique index") |
             case_insensitive_str("key") |
             case_insensitive_str("index")
+        end
+
+        rule(:collate_qualifier) do
+          (case_insensitive_str("collate") >> spaces >> identifier).as(:collate_qualifier)
         end
 
         rule(:character_set_qualifier) do
@@ -449,6 +453,13 @@ module SchemaManager
           {
             type: :character_set,
             value: character_set_qualifier,
+          }
+        end
+
+        rule(collate_qualifier: simple(:collate_qualifier)) do
+          {
+            type: :collate,
+            value: collate_qualifier,
           }
         end
       end
