@@ -170,9 +170,11 @@ module SchemaManager
         end
 
         rule(:primary_key_definition) do
-          case_insensitive_str("primary key") >> (spaces >> index_type).maybe >>
-            spaces >> parenthetical(comma_separated(name_with_optional_values)) >>
-            (spaces >> index_type).maybe
+          (
+            case_insensitive_str("primary key") >> (spaces >> index_type).maybe >>
+              spaces >> parenthetical(comma_separated(name_with_optional_values)) >>
+              (spaces >> index_type).maybe
+          ).as(:primary_key)
         end
 
         rule(:unique_key_definition) do
@@ -240,7 +242,7 @@ module SchemaManager
         end
 
         rule(:name_with_optional_values) do
-          quoted(identifier) >> (spaces >> parenthetical(comma_separated(value))).maybe
+          quoted_identifier >> (spaces >> parenthetical(comma_separated(value))).maybe
         end
 
         # TODO: Replace string with another proper pattern
@@ -326,7 +328,6 @@ module SchemaManager
       end
 
       class ParsletTransform < Parslet::Transform
-
         # @example
         # "id"
         rule(quoted_identifier: simple(:quoted_identifier)) do
@@ -356,13 +357,18 @@ module SchemaManager
         #   ]
         # }
         rule(table_name: simple(:table_name), table_components: subtree(:table_components)) do
+          fields = table_components.map do |component|
+            component[:field]
+          end.compact
+
+          constraints = table_components.map do |component|
+            component[:constraint]
+          end.compact
+
           {
             name: table_name,
-            fields: table_components.map do |component|
-              if field = component[:field]
-                field
-              end
-            end.compact
+            fields: fields,
+            constraints: constraints,
           }
         end
       end

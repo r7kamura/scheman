@@ -8,7 +8,7 @@ describe SchemaManager::Parsers::Mysql do
   describe ".parse" do
     subject do
       begin
-        described_class.parse(str)
+        described_class.parse(str).to_hash
       rescue => exception
         puts exception.cause.ascii_tree rescue nil
         raise
@@ -67,7 +67,33 @@ describe SchemaManager::Parsers::Mysql do
           );
         EOS
       end
-      it { should be_true }
+
+      it "succeeds in parse" do
+        should == {
+          statements: [
+            {
+              create_table: {
+                name: "recipes",
+                fields: [
+                  {
+                    name: "id",
+                    type: "integer",
+                  },
+                  {
+                    name: "name",
+                    type: "varchar",
+                  },
+                ],
+                constraints: [
+                  {
+                    primary_key: "id",
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      end
     end
   end
 end
