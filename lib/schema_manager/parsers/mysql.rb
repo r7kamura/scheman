@@ -1,20 +1,20 @@
 module SchemaManager
   module Parsers
     class Mysql < Base
-      def self.parslet_parser
-        @parslet_parser ||= ParsletParser.new
+      def self.parser
+        @parser ||= ParsletParser.new
       end
 
-      def self.parslet_transform
-        @parslet_transform ||= ParsletTransform.new
+      def self.transform
+        @transform ||= ParsletTransform.new
       end
 
       # @param schema [String]
       # @return [SchemaManager::Schema]
       def self.parse(schema)
         Schema.new(
-          parslet_transform.apply(
-            parslet_parser.parse(
+          transform.apply(
+            parser.parse(
               schema
             )
           )
