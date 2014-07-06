@@ -332,7 +332,6 @@ module SchemaManager
           quoted_identifier.as(:column_name)
         end
 
-        # TODO: Replace string with another proper pattern
         rule(:value) do
           float_number | quoted_string | str("NULL")
         end
