@@ -20,7 +20,20 @@ module SchemaManager
       "TODO"
     end
 
+    # @return [Array<Hash>] An array of table definitions we need to create
+    def tables_to_create
+      after_schema.created_tables.select do |table|
+        table_names_to_create.include?(table[:name])
+      end
+    end
+
     private
+
+    # @note To be called from #tables_to_create
+    # @return [Array<String>] An array of table names we need to create
+    def table_names_to_create
+      @table_names_to_create ||= after_schema.created_table_names - before_schema.created_table_names
+    end
 
     # @return [SchemaManager::Schema]
     def before_schema
