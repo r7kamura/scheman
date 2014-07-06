@@ -52,33 +52,45 @@ describe SchemaManager::Parsers::Mysql do
               name: "table1",
               fields: [
                 {
-                  name: "column1",
-                  type: "integer",
-                  qualifiers: [
-                    {
-                      type: :not_null,
-                    },
-                    {
-                      type: :auto_increment,
-                    },
-                  ],
+                  field: {
+                    name: "column1",
+                    type: "integer",
+                    qualifiers: [
+                      {
+                        qualifier: {
+                          type: "not_null",
+                        },
+                      },
+                      {
+                        qualifier: {
+                          type: "auto_increment",
+                        },
+                      },
+                    ],
+                  },
                 },
                 {
-                  name: "column2",
-                  type: "varchar",
-                  qualifiers: [
-                    {
-                      type: :not_null,
-                    },
-                  ],
+                  field: {
+                    name: "column2",
+                    type: "varchar",
+                    qualifiers: [
+                      {
+                        qualifier: {
+                          type: "not_null",
+                        },
+                      },
+                    ],
+                  },
                 },
               ],
               indices: [
                 {
-                  column: "column1",
-                  primary: true,
-                  name: nil,
-                  type: nil,
+                  index: {
+                    column: "column1",
+                    primary: true,
+                    name: nil,
+                    type: nil,
+                  },
                 },
               ],
             },
@@ -113,7 +125,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse field qualifier" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :not_null
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "not_null"
       end
     end
 
@@ -123,7 +135,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :null
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "null"
       end
     end
 
@@ -133,7 +145,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :auto_increment
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "auto_increment"
       end
     end
 
@@ -143,7 +155,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :primary_key
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "primary_key"
       end
     end
 
@@ -153,7 +165,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers].should be_empty
+        subject[0][:create_table][:fields][0][:field][:qualifiers].should be_empty
       end
     end
 
@@ -163,9 +175,11 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0].should == {
-          type: :character_set,
-          value: "utf8",
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0].should == {
+          qualifier: {
+            type: "character_set",
+            value: "utf8",
+          },
         }
       end
     end
@@ -176,9 +190,11 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0].should == {
-          type: :collate,
-          value: "utf8_general_ci",
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0].should == {
+          qualifier: {
+            type: "collate",
+            value: "utf8_general_ci",
+          },
         }
       end
     end
@@ -189,7 +205,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :unique_key
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "unique_key"
       end
     end
 
@@ -199,7 +215,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :unique_key
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "unique_key"
       end
     end
 
@@ -209,7 +225,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :key
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
       end
     end
 
@@ -219,7 +235,7 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:qualifiers][0][:type].should == :key
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
       end
     end
 
@@ -235,10 +251,12 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: nil,
-          primary: true,
-          type: nil,
+          index: {
+            column: "column1",
+            name: nil,
+            primary: true,
+            type: nil,
+          },
         }
       end
     end
@@ -255,10 +273,12 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: nil,
-          primary: true,
-          type: "btree",
+          index: {
+            column: "column1",
+            name: nil,
+            primary: true,
+            type: "btree",
+          },
         }
       end
     end
@@ -275,10 +295,12 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: nil,
-          primary: true,
-          type: "btree",
+          index: {
+            column: "column1",
+            name: nil,
+            primary: true,
+            type: "btree",
+          },
         }
       end
     end
@@ -290,9 +312,11 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: "index1",
-          type: nil,
+          index: {
+            column: "column1",
+            name: "index1",
+            type: nil,
+          },
         }
       end
     end
@@ -304,9 +328,11 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: "index1",
-          type: "btree",
+          index: {
+            column: "column1",
+            name: "index1",
+            type: "btree",
+          },
         }
       end
     end
@@ -318,9 +344,11 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: "index1",
-          type: "btree",
+          index: {
+            column: "column1",
+            name: "index1",
+            type: "btree",
+          },
         }
       end
     end
@@ -332,9 +360,11 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: "index1",
-          type: "fulltext",
+          index: {
+            column: "column1",
+            name: "index1",
+            type: "fulltext",
+          },
         }
       end
     end
@@ -346,9 +376,11 @@ describe SchemaManager::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:indices][0].should == {
-          column: "column1",
-          name: "index1",
-          type: "spatial",
+          index: {
+            column: "column1",
+            name: "index1",
+            type: "spatial",
+          },
         }
       end
     end
