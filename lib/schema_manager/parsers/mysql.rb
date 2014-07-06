@@ -242,7 +242,7 @@ module SchemaManager
         rule(:field) do
           (
             comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
-              (spaces >> field_qualifiers).maybe >>
+              (spaces >> field_qualifiers).maybe.as(:field_qualifiers) >>
               (spaces >> field_comment).maybe >>
               (spaces >> reference_definition).maybe >>
               (spaces >> on_update).maybe >>
@@ -255,7 +255,7 @@ module SchemaManager
         end
 
         rule(:field_qualifiers) do
-          (field_qualifier >> (spaces >> field_qualifier).repeat).as(:field_qualifiers)
+          (field_qualifier >> (spaces >> field_qualifier).repeat)
         end
 
         # TODO: default value, on update
@@ -312,8 +312,12 @@ module SchemaManager
 
         rule(:field_type) do
           field_type_name >>
-            (spaces? >> parenthetical(comma_separated(value))).maybe >>
+            (spaces? >> parenthetical(comma_separated(field_value))).maybe.as(:field_values) >>
             (spaces >> type_qualifier).repeat
+        end
+
+        rule(:field_value) do
+          value.as(:field_value)
         end
 
         rule(:field_type_name) do
@@ -442,21 +446,15 @@ module SchemaManager
           identifier.to_s
         end
 
-        rule(
-          field_type_name: simple(:field_type_name),
-          field_name: simple(:field_name),
-        ) do
-          {
-            name: field_name.to_s,
-            type: field_type_name.to_s.downcase,
-            qualifiers: [],
-          }
+        rule(field_value: simple(:field_value)) do
+          field_value.to_s
         end
 
         rule(
           field_type_name: simple(:field_type_name),
           field_name: simple(:field_name),
-          field_qualifiers: subtree(:field_qualifiers)
+          field_qualifiers: subtree(:field_qualifiers),
+          field_values: subtree(:field_values),
         ) do
           {
             name: field_name.to_s,
@@ -464,6 +462,7 @@ module SchemaManager
             qualifiers: Array.wrap(field_qualifiers).map do |qualifier|
               { qualifier: qualifier }
             end,
+            values: Array.wrap(field_values),
           }
         end
 

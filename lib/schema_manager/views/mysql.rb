@@ -162,6 +162,7 @@ module SchemaManager
       class Field < Node
         def to_s
           str = "`#{name}` #{type}"
+          str << "(#{values})" if has_values?
           str << " #{qualifiers}" if has_qualifiers?
           str
         end
@@ -184,8 +185,16 @@ module SchemaManager
           @element[:qualifiers].map(&:to_s).join(" ")
         end
 
+        def values
+          @element[:values].join(", ")
+        end
+
         def has_qualifiers?
           !@element[:qualifiers].empty?
+        end
+
+        def has_values?
+          !@element[:values].empty?
         end
       end
 

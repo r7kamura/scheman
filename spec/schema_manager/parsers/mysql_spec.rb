@@ -55,6 +55,7 @@ describe SchemaManager::Parsers::Mysql do
                   field: {
                     name: "column1",
                     type: "integer",
+                    values: [],
                     qualifiers: [
                       {
                         qualifier: {
@@ -73,6 +74,7 @@ describe SchemaManager::Parsers::Mysql do
                   field: {
                     name: "column2",
                     type: "varchar",
+                    values: ["255"],
                     qualifiers: [
                       {
                         qualifier: {

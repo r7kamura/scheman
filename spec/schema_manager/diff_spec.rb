@@ -61,7 +61,7 @@ describe SchemaManager::Diff do
           PRIMARY KEY (`column1`)
         );
 
-        ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR NOT NULL;
+        ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL;
 
         ALTER TABLE `table1` DROP COLUMN `column1`;
 
