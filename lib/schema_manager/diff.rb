@@ -17,19 +17,27 @@ module SchemaManager
       validate!
     end
 
-    # @return [String] SQL applied for the previous to change to the next
+    # @return [String] A string representation of this diff
     def to_s
-      "TODO"
+      view_class.new(to_hash).to_s
     end
 
-    # @return [Array<Hash>] An array of table definitions we need to create
-    def tables_to_create
-      after_schema.created_tables.select do |table|
-        table_names_to_create.include?(table[:name])
-      end
+    # @note Passed to Parslet::Transform to convert into SQL string
+    # @return [Hash] A hash representation of this diff
+    def to_hash
+      {
+        create_tables: create_tables,
+      }
     end
 
     private
+
+    # @return [Array<Hash>] CREATE TABLE statements we need to apply
+    def create_tables
+      after_schema.create_tables.select do |statement|
+        table_names_to_create.include?(statement[:create_table][:name])
+      end
+    end
 
     # @note To be called from #tables_to_create
     # @return [Array<String>] An array of table names we need to create
@@ -78,6 +86,16 @@ module SchemaManager
     # @return [String]
     def output_type
       @output_type || @type
+    end
+
+    # @return [Class]
+    def view_class
+      case output_type
+      when "mysql"
+        Views::Mysql
+      else
+        raise Errors::ViewNotFound
+      end
     end
   end
 end

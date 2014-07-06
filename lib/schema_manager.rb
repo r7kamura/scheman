@@ -1,6 +1,7 @@
 require "active_support/core_ext/array/wrap"
 require "active_support/core_ext/hash/slice"
 require "active_support/core_ext/object/try"
+require "active_support/core_ext/string/indent"
 require "parslet"
 
 require "schema_manager/diff"
@@ -10,3 +11,5 @@ require "schema_manager/parsers/base"
 require "schema_manager/parsers/mysql"
 require "schema_manager/schema"
 require "schema_manager/version"
+require "schema_manager/views/base"
+require "schema_manager/views/mysql"

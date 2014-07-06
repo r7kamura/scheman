@@ -8,14 +8,10 @@ module SchemaManager
       @statements
     end
 
-    # @return [Array<Hash>] An array of table definitions created in this schema
-    def created_tables
-      @statements.inject([]) do |result, statement|
-        if create_table = statement[:create_table]
-          result << create_table
-        else
-          result
-        end
+    # @return [Array<Hash>] An array of CREATE TABLE statements
+    def create_tables
+      @statements.select do |statement|
+        statement[:create_table]
       end
     end
 

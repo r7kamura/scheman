@@ -461,18 +461,20 @@ module SchemaManager
           {
             name: field_name.to_s,
             type: field_type_name.to_s.downcase,
-            qualifiers: Array.wrap(field_qualifiers),
+            qualifiers: Array.wrap(field_qualifiers).map do |qualifier|
+              { qualifier: qualifier }
+            end,
           }
         end
 
         rule(table_name: simple(:table_name), table_components: subtree(:table_components)) do
           components = Array.wrap(table_components)
 
-          fields = components.map do |component|
+          fields = components.select do |component|
             component[:field]
           end.compact
 
-          indices = components.map do |component|
+          indices = components.select do |component|
             component[:index]
           end.compact
 
@@ -485,51 +487,51 @@ module SchemaManager
 
         rule(auto_increment_qualifier: simple(:auto_increment_qualifier)) do
           {
-            type: :auto_increment,
+            type: "auto_increment",
           }
         end
 
         rule(not_null_qualifier: simple(:not_null_qualifier)) do
           {
-            type: :not_null,
+            type: "not_null",
           }
         end
 
         rule(null_qualifier: simple(:null_qualifier)) do
           {
-            type: :null,
+            type: "null",
           }
         end
 
         rule(primary_key_qualifier: simple(:primary_key_qualifier)) do
           {
-            type: :primary_key,
+            type: "primary_key",
           }
         end
 
         rule(character_set_qualifier: simple(:character_set_qualifier)) do
           {
-            type: :character_set,
+            type: "character_set",
             value: character_set_qualifier,
           }
         end
 
         rule(collate_qualifier: simple(:collate_qualifier)) do
           {
-            type: :collate,
+            type: "collate",
             value: collate_qualifier,
           }
         end
 
         rule(unique_key_qualifier: simple(:unique_key_qualifier)) do
           {
-            type: :unique_key,
+            type: "unique_key",
           }
         end
 
         rule(key_qualifier: simple(:key_qualifier)) do
           {
-            type: :key,
+            type: "key",
           }
         end
 

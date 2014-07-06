@@ -5,5 +5,8 @@ module SchemaManager
 
     class ParserNotFound < Base
     end
+
+    class ViewNotFound < Base
+    end
   end
 end

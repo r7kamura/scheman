@@ -63,49 +63,22 @@ describe SchemaManager::Diff do
     end
   end
 
-  describe "#tables_to_create" do
-    subject do
-      instance.tables_to_create
-    end
-
-    context "with valid condition" do
-      it "returns table definitions we need to create" do
-        should == [
-          {
-            name: "table2",
-            fields: [
-              name: "column1",
-              type: "integer",
-              qualifiers: [
-                {
-                  type: :not_null,
-                },
-                {
-                  type: :auto_increment,
-                },
-              ],
-            ],
-            indices: [
-              {
-                column: "column1",
-                name: nil,
-                type: nil,
-                primary: true,
-              },
-            ],
-          }
-        ]
-      end
-    end
-  end
-
   describe "#to_s" do
     subject do
       instance.to_s
     end
 
-    it "returns a String" do
-      should be_a String
+    it "returns a diff in SQL" do
+      should == <<-EOS.strip_heredoc
+        BEGIN;
+
+        CREATE TABLE `table2` (
+          `column1` INTEGER NOT NULL AUTO INCREMENT,
+          PRIMARY KEY (`column1`)
+        );
+
+        COMMIT;
+      EOS
     end
   end
 end
