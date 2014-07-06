@@ -166,60 +166,73 @@ module SchemaManager
         end
 
         rule(:create_definition) do
-          constraint | index | field | comment
-        end
-
-        rule(:constraint) do
-          (primary_key_definition | unique_key_definition | foreign_key_definition).as(:constraint)
-        end
-
-        rule(:primary_key_definition) do
-          (
-            case_insensitive_str("primary key") >>
-              optional_index_structure >>
-              spaces >> parenthetical(comma_separated(column_name_with_optional_values)) >>
-              optional_index_structure
-          ).as(:primary_key)
-        end
-
-        rule(:optional_index_structure) do
-          (spaces >> index_structure).maybe
-        end
-
-        rule(:unique_key_definition) do
-          str("TODO")
-        end
-
-        rule(:foreign_key_definition) do
-          str("TODO")
+          index | field | comment
         end
 
         rule(:index) do
-          (normal_index | abnormal_index).as(:index)
+          (
+            primary_key |
+            unique_key |
+            foreign_key |
+            normal_index |
+            fulltext_index |
+            spatial_index
+          ).as(:index)
+        end
+
+        rule(:primary_key) do
+          (
+            case_insensitive_str("primary key") >>
+              optional_index_type >>
+              spaces >> parenthetical(comma_separated(column_name_with_optional_values)) >>
+              optional_index_type
+          ).as(:primary_key)
+        end
+
+        rule(:optional_index_type) do
+          (spaces >> index_type).maybe
+        end
+
+        rule(:unique_key) do
+          str("TODO")
+        end
+
+        rule(:foreign_key) do
+          str("TODO")
         end
 
         rule(:normal_index) do
           word_index >> spaces >> index_name >>
-            optional_using_index_structure >>
+            optional_using_index_type >>
             parenthetical(comma_separated(column_name_with_optional_values)) >>
-            optional_using_index_structure
+            optional_using_index_type
         end
 
-        rule(:optional_using_index_structure) do
-          spaces >> (using_index_structure >> spaces).maybe
+        rule(:optional_using_index_type) do
+          spaces >> (using_index_type >> spaces).maybe
         end
 
-        rule(:using_index_structure) do
-          case_insensitive_str("using") >> spaces >> index_structure
+        rule(:using_index_type) do
+          case_insensitive_str("using") >> spaces >> index_type
         end
 
         rule(:index_name) do
           identifier.as(:index_name)
         end
 
-        rule(:abnormal_index) do
-          (case_insensitive_str("fulltext") | case_insensitive_str("spatial")) >>
-            spaces >> (word_index >> spaces).maybe >>
+        # TODO: Fix spaces not to allow no space
+        rule(:fulltext_index) do
+          (
+            case_insensitive_str("fulltext") >> spaces >>
+              (word_index >> space >> spaces).maybe >>
+              (index_name >> spaces).maybe >>
+              parenthetical(comma_separated(column_name_with_optional_values))
+          ).as(:fulltext_index)
+        end
+
+        rule(:spatial_index) do
+          case_insensitive_str("spatial") >> spaces >>
+            (word_index >> spaces).maybe >>
             (index_name >> spaces).maybe >>
             parenthetical(comma_separated(column_name_with_optional_values))
         end
@@ -342,10 +355,10 @@ module SchemaManager
           match("e|E") >> unsigned_integer
         end
 
-        rule(:index_structure) do
+        rule(:index_type) do
           (
             case_insensitive_str("btree") | case_insensitive_str("hash") | case_insensitive_str("rtree")
-          ).as(:index_structure)
+          ).as(:index_type)
         end
 
         rule(:identifier) do
@@ -453,10 +466,6 @@ module SchemaManager
             component[:field]
           end.compact
 
-          constraints = components.map do |component|
-            component[:constraint]
-          end.compact
-
           indices = components.map do |component|
             component[:index]
           end.compact
@@ -464,7 +473,6 @@ module SchemaManager
           {
             name: table_name,
             fields: fields,
-            constraints: constraints,
             indices: indices,
           }
         end
@@ -519,28 +527,59 @@ module SchemaManager
           }
         end
 
-        rule(primary_key: subtree(:primary_key)) do
-          {
-            primary_key: {
-              column: primary_key[:column_name],
-              structure: primary_key[:index_structure].try(:to_s).try(:downcase),
-            },
-          }
-        end
-
         rule(database_name: simple(:database_name)) do
           {
             database_name: database_name.to_s,
           }
         end
 
-        rule(index: subtree(:index)) do
+        rule(primary_key: subtree(:primary_key)) do
+          primary_key.merge(primary: true)
+        end
+
+        rule(fulltext_index: subtree(:fulltext_index)) do
+          fulltext_index.merge(type: "fulltext")
+        end
+
+        rule(column_name: simple(:column_name)) do
           {
-            index: {
-              column: index[:column_name].to_s,
-              name: index[:index_name].to_s,
-              structure: index[:index_structure].try(:to_s).try(:downcase),
-            },
+            column: column_name,
+            name: nil,
+            type: nil,
+          }
+        end
+
+        rule(
+          column_name: simple(:column_name),
+          index_type: simple(:index_type),
+        ) do
+          {
+            column: column_name,
+            name: nil,
+            type: index_type.try(:to_s).try(:downcase),
+          }
+        end
+
+        rule(
+          column_name: simple(:column_name),
+          index_name: simple(:index_name),
+        ) do
+          {
+            column: column_name,
+            name: index_name,
+            type: nil,
+          }
+        end
+
+        rule(
+          column_name: simple(:column_name),
+          index_name: simple(:index_name),
+          index_type: simple(:index_type),
+        ) do
+          {
+            column: column_name,
+            name: index_name,
+            type: index_type.try(:to_s).try(:downcase),
           }
         end
       end

@@ -31,7 +31,7 @@ describe SchemaManager::Parsers::Mysql do
           CREATE TABLE `table1` (
             `column1` INTEGER NOT NULL AUTO INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`column1`)
           );
 
           ALTER TABLE table_name ADD FOREIGN KEY (column_name) REFERENCES table_name (column_name);
@@ -73,13 +73,12 @@ describe SchemaManager::Parsers::Mysql do
                   ],
                 },
               ],
-              indices: [],
-              constraints: [
+              indices: [
                 {
-                  primary_key: {
-                    column: "id",
-                    structure: nil,
-                  },
+                  column: "column1",
+                  primary: true,
+                  name: nil,
+                  type: nil,
                 },
               ],
             },
@@ -224,7 +223,7 @@ describe SchemaManager::Parsers::Mysql do
       end
     end
 
-    context "with PRIMARY KEY constraint" do
+    context "with PRIMARY KEY" do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
@@ -235,16 +234,16 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:constraints][0].should == {
-          primary_key: {
-            column: "column1",
-            structure: nil,
-          },
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: nil,
+          primary: true,
+          type: nil,
         }
       end
     end
 
-    context "with PRIMARY KEY constraint with index structure" do
+    context "with PRIMARY KEY BTREE" do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
@@ -255,16 +254,16 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:constraints][0].should == {
-          primary_key: {
-            column: "column1",
-            structure: "btree",
-          },
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: nil,
+          primary: true,
+          type: "btree",
         }
       end
     end
 
-    context "with PRIMARY KEY constraint with index structure behind" do
+    context "with PRIMARY KEY ... BTREE" do
       let(:str) do
         <<-EOS.strip_heredoc
           CREATE TABLE `table1` (
@@ -275,28 +274,26 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:constraints][0].should == {
-          primary_key: {
-            column: "column1",
-            structure: "btree",
-          },
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: nil,
+          primary: true,
+          type: "btree",
         }
       end
     end
 
-    context "with KEY index definition" do
+    context "with KEY" do
       let(:str) do
         "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`));"
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:indices].should == [
-          {
-            column: "column1",
-            name: "index1",
-            structure: nil,
-          },
-        ]
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: "index1",
+          type: nil,
+        }
       end
     end
 
@@ -306,7 +303,11 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:indices][0][:structure].should == "btree"
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: "index1",
+          type: "btree",
+        }
       end
     end
 
@@ -316,7 +317,11 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:indices][0][:structure].should == "btree"
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: "index1",
+          type: "btree",
+        }
       end
     end
 
@@ -326,7 +331,11 @@ describe SchemaManager::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:indices][0][:structure].should == nil
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: "index1",
+          type: "fulltext",
+        }
       end
     end
 
@@ -359,13 +368,12 @@ describe SchemaManager::Parsers::Mysql do
                   ],
                 },
               ],
-              indices: [],
-              constraints: [
+              indices: [
                 {
-                  primary_key: {
-                    column: "column1",
-                    structure: nil,
-                  },
+                  column: "column1",
+                  primary: true,
+                  name: nil,
+                  type: nil,
                 },
               ],
             },
