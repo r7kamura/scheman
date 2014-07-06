@@ -50,10 +50,14 @@ describe SchemaManager::Diff do
       should == <<-EOS.strip_heredoc
         BEGIN;
 
+        SET foreign_key_checks=0;
+
         CREATE TABLE `table2` (
           `column1` INTEGER NOT NULL AUTO INCREMENT,
           PRIMARY KEY (`column1`)
         );
+
+        SET foreign_key_checks=1;
 
         COMMIT;
       EOS

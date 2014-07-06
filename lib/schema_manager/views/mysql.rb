@@ -12,15 +12,20 @@ module SchemaManager
 
       # @return [String]
       def to_s
-        self.class.transform.apply(root: @diff)
+        self.class.transform.apply(
+          root: @diff
+        )
       end
 
       class Transform < Parslet::Transform
         rule(root: subtree(:root)) do
-          str = ""
-          str << "BEGIN;\n\n"
-          str << "#{root}\n\n"
-          str << "COMMIT;\n"
+          [
+            "BEGIN;",
+            "SET foreign_key_checks=0;",
+            root,
+            "SET foreign_key_checks=1;",
+            "COMMIT;",
+          ].join("\n\n") + "\n"
         end
 
         rule(create_tables: sequence(:create_tables)) do
