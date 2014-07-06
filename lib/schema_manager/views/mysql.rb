@@ -12,15 +12,19 @@ module SchemaManager
 
       # @return [String]
       def to_s
-        self.class.transform.apply(@diff)
+        self.class.transform.apply(root: @diff)
       end
 
       class Transform < Parslet::Transform
+        rule(root: subtree(:root)) do
+          str = ""
+          str << "BEGIN;\n\n"
+          str << "#{root}\n\n"
+          str << "COMMIT;\n"
+        end
+
         rule(create_tables: sequence(:create_tables)) do
-          statements = create_tables.dup
-          statements.unshift("BEGIN;")
-          statements.push("COMMIT;")
-          statements.join("\n\n") + "\n"
+          CreateTables.new(create_tables)
         end
 
         rule(create_table: subtree(:create_table)) do
@@ -40,13 +44,19 @@ module SchemaManager
         end
       end
 
-      class Tree
-        def initialize(tree)
-          @tree = tree
+      class Node
+        def initialize(element)
+          @element = element
         end
       end
 
-      class CreateTable < Tree
+      class CreateTables < Node
+        def to_s
+          @element.join("\n\n")
+        end
+      end
+
+      class CreateTable < Node
         def to_s
           str = ""
           str << "CREATE TABLE `#{table_name}` (\n"
@@ -57,15 +67,15 @@ module SchemaManager
         private
 
         def table_name
-          @tree[:name]
+          @element[:name]
         end
 
         def definitions
-          @tree[:fields] + @tree[:indices]
+          @element[:fields] + @element[:indices]
         end
       end
 
-      class Field < Tree
+      class Field < Node
         def to_s
           str = "`#{name}` #{type}"
           str << " #{qualifiers}" if has_qualifiers?
@@ -77,25 +87,25 @@ module SchemaManager
         # @example
         #   "id"
         def name
-          @tree[:name]
+          @element[:name]
         end
 
         # @example
         #   "INTEGER"
         def type
-          @tree[:type].upcase
+          @element[:type].upcase
         end
 
         def qualifiers
-          @tree[:qualifiers].map(&:to_s).join(" ")
+          @element[:qualifiers].map(&:to_s).join(" ")
         end
 
         def has_qualifiers?
-          !@tree[:qualifiers].empty?
+          !@element[:qualifiers].empty?
         end
       end
 
-      class Qualifier < Tree
+      class Qualifier < Node
         def to_s
           str = type
           str << " #{value}" if has_value?
@@ -107,41 +117,41 @@ module SchemaManager
         # @example
         #   "NOT NULL"
         def type
-          @tree[:type].upcase.gsub("_", " ")
+          @element[:type].upcase.gsub("_", " ")
         end
 
         # @example
         #   "utf8"
         def value
-          @tree[:value]
+          @element[:value]
         end
 
         def has_value?
-          @tree[:value]
+          @element[:value]
         end
       end
 
-      class Index < Tree
+      class Index < Node
         def to_s
           "#{prefix} (`#{column}`)"
         end
 
         def primary_key?
-          !!@tree[:primary]
+          !!@element[:primary]
         end
 
         def fulltext?
-          @tree[:type] == "fulltext"
+          @element[:type] == "fulltext"
         end
 
         def spatial?
-          @tree[:type] == "spatial"
+          @element[:type] == "spatial"
         end
 
         # @example
         #   "id"
         def column
-          @tree[:column]
+          @element[:column]
         end
 
         # @example
