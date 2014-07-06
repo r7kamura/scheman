@@ -5,6 +5,8 @@ SQL schema parser.
 Create diff from 2 schema files.
 
 ```ruby
+require "scheman"
+
 before = <<-SQL
 CREATE TABLE `table1` (
   `column1` INTEGER NOT NULL AUTO INCREMENT,
