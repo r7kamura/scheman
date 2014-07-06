@@ -38,8 +38,5 @@ So far, we are aimed at supporting MySQL for the 1st prototype.
 ### TODO
 There are a lot of things to do. We welcome your contributions!
 
-* Create Parslet::Transform for MySQL
-* Improve Parslet::Parser for MySQL
-* Generate SchemaManager::Schema from Parslet objects
 * Geenrate SchemaManager::Diff from 2 SchemaManager::Schema
 * Generate SQL representation from SchemaManager::Diff
