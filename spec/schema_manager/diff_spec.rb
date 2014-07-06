@@ -23,6 +23,11 @@ describe SchemaManager::Diff do
         `column1` INTEGER NOT NULL AUTO INCREMENT,
         PRIMARY KEY (`column1`)
       );
+
+      CREATE TABLE `table2` (
+        `column1` INTEGER NOT NULL AUTO INCREMENT,
+        PRIMARY KEY (`column1`)
+      );
     EOS
   end
 
@@ -34,7 +39,7 @@ describe SchemaManager::Diff do
         PRIMARY KEY (`column1`)
       );
 
-      CREATE TABLE `table2` (
+      CREATE TABLE `table3` (
         `column1` INTEGER NOT NULL AUTO INCREMENT,
         PRIMARY KEY (`column1`)
       );
@@ -52,10 +57,12 @@ describe SchemaManager::Diff do
 
         SET foreign_key_checks=0;
 
-        CREATE TABLE `table2` (
+        CREATE TABLE `table3` (
           `column1` INTEGER NOT NULL AUTO INCREMENT,
           PRIMARY KEY (`column1`)
         );
+
+        DROP TABLE `table2`;
 
         SET foreign_key_checks=1;
 

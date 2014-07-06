@@ -1,5 +1,6 @@
 require "active_support/core_ext/array/wrap"
 require "active_support/core_ext/hash/slice"
+require "active_support/core_ext/object/blank"
 require "active_support/core_ext/object/try"
 require "active_support/core_ext/string/indent"
 require "parslet"

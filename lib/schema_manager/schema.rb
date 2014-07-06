@@ -10,21 +10,29 @@ module SchemaManager
 
     # @return [Array<Hash>] An array of CREATE TABLE statements
     def create_tables
-      @statements.select do |statement|
+      @create_tables ||= @statements.select do |statement|
         statement[:create_table]
       end
     end
 
-    # TODO
-    # @reutrn [Array<String>] An array of table names to created in this schema
-    def created_table_names
-      @statements.inject([]) do |result, statement|
-        if create_table = statement[:create_table]
-          result << create_table[:name]
-        else
-          result
-        end
+    # @return [Hash]
+    def tables_indexed_by_name
+      @tables_indexed_by_name ||= tables.inject({}) do |result, table|
+        result.merge(table[:name] => table)
       end
+    end
+
+    # TODO: We might want to calculate DROP TABLE and ALTER TABLE against to created tables
+    # @return [Array] All tables to be created after applying this schema
+    def tables
+      @tables ||= create_tables.map do |create_table|
+        create_table[:create_table]
+      end
+    end
+
+    # @return [Array<String>]
+    def table_names
+      tables.map {|table| table[:name] }
     end
   end
 end

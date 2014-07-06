@@ -28,8 +28,20 @@ module SchemaManager
           ].join("\n\n") + "\n"
         end
 
-        rule(create_tables: sequence(:create_tables)) do
-          CreateTables.new(create_tables)
+        rule(
+          alter_tables: sequence(:alter_tables),
+          create_tables: sequence(:create_tables),
+          drop_tables: sequence(:drop_tables),
+        ) do
+          [
+            CreateTables.new(create_tables).to_s.presence,
+            AlterTables.new(alter_tables).to_s.presence,
+            DropTables.new(drop_tables).to_s.presence,
+          ].compact.join("\n\n")
+        end
+
+        rule(drop_table: subtree(:drop_table)) do
+          DropTable.new(drop_table)
         end
 
         rule(create_table: subtree(:create_table)) do
@@ -55,9 +67,36 @@ module SchemaManager
         end
       end
 
-      class CreateTables < Node
+      class Statements < Node
         def to_s
           @element.join("\n\n")
+        end
+      end
+
+      class AlterTables < Statements
+      end
+
+      class DropTables < Statements
+      end
+
+      class CreateTables < Statements
+      end
+
+      class DropTable < Node
+        def to_s
+          "DROP TABLE `#{table_name}`;"
+        end
+
+        private
+
+        def table_name
+          @element[:name]
+        end
+      end
+
+      class AlterTable < Node
+        def to_s
+          "TODO"
         end
       end
 

@@ -26,11 +26,35 @@ module SchemaManager
     # @return [Hash] A hash representation of this diff
     def to_hash
       {
+        alter_tables: alter_tables,
         create_tables: create_tables,
+        drop_tables: drop_tables,
       }
     end
 
     private
+
+    # TODO
+    # @return [Array<Hash>] ALTER TABLE statements we need to apply
+    def alter_tables
+      after_schema.tables.each do |after_table|
+        table_name = after_table[:name]
+        if before_table = before_schema.tables_indexed_by_name[table_name]
+        end
+      end
+      []
+    end
+
+    # @return [Array<Hash>] DROP TABLE statements we need to apply
+    def drop_tables
+      table_names_to_drop.map do |name|
+        {
+          drop_table: {
+            name: name,
+          },
+        }
+      end
+    end
 
     # @return [Array<Hash>] CREATE TABLE statements we need to apply
     def create_tables
@@ -39,10 +63,14 @@ module SchemaManager
       end
     end
 
-    # @note To be called from #tables_to_create
-    # @return [Array<String>] An array of table names we need to create
+    # @return [Array<String>]
     def table_names_to_create
-      @table_names_to_create ||= after_schema.created_table_names - before_schema.created_table_names
+      @table_names_to_create ||= after_schema.table_names - before_schema.table_names
+    end
+
+    # @return [Array<String>]
+    def table_names_to_drop
+      @table_names_to_drop ||= before_schema.table_names - after_schema.table_names
     end
 
     # @return [SchemaManager::Schema]
