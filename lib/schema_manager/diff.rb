@@ -5,13 +5,15 @@ module SchemaManager
     # @param type [String] The type of schema syntax, default types of the both schemata (e.g. "mysql")
     # @param before_type [String] Specify the type of the previous schema if needed
     # @param after_type [String] Specify the type of the next schema if needed
+    # @param output_type [String] Specify the type of the output schema if needed
     # @raise [SchemaManager::Errors::ParserNotFound]
-    def initialize(before: nil, after: nil, type: nil, before_type: nil, after_type: nil)
+    def initialize(before: nil, after: nil, type: nil, before_type: nil, after_type: nil, output_type: nil)
       @before = before
       @after = after
       @type = type
       @before_type = before_type
       @after_type = after_type
+      @output_type = output_type
       validate!
     end
 
@@ -71,6 +73,11 @@ module SchemaManager
     # @return [String]
     def after_type
       @after_type || @type
+    end
+
+    # @return [String]
+    def output_type
+      @output_type || @type
     end
   end
 end
