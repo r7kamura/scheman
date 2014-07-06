@@ -231,10 +231,12 @@ module SchemaManager
         end
 
         rule(:spatial_index) do
-          case_insensitive_str("spatial") >> spaces >>
-            (word_index >> spaces).maybe >>
-            (index_name >> spaces).maybe >>
-            parenthetical(comma_separated(column_name_with_optional_values))
+          (
+            case_insensitive_str("spatial") >> spaces >>
+              (word_index >> space >> spaces).maybe >>
+              (index_name >> spaces).maybe >>
+              parenthetical(comma_separated(column_name_with_optional_values))
+          ).as(:spatial_index)
         end
 
         rule(:field) do
@@ -539,6 +541,10 @@ module SchemaManager
 
         rule(fulltext_index: subtree(:fulltext_index)) do
           fulltext_index.merge(type: "fulltext")
+        end
+
+        rule(spatial_index: subtree(:spatial_index)) do
+          spatial_index.merge(type: "spatial")
         end
 
         rule(column_name: simple(:column_name)) do

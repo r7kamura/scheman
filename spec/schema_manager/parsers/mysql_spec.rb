@@ -339,6 +339,20 @@ describe SchemaManager::Parsers::Mysql do
       end
     end
 
+    context "with SPATIAL" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER, SPATIAL index1 (`column1`));"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:indices][0].should == {
+          column: "column1",
+          name: "index1",
+          type: "spatial",
+        }
+      end
+    end
+
     context "with CREATE TABLE" do
       let(:str) do
         <<-EOS.strip_heredoc
