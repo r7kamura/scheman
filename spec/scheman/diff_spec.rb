@@ -34,6 +34,7 @@ describe Scheman::Diff do
   let(:after_schema) do
     <<-EOS.strip_heredoc
       CREATE TABLE `table1` (
+        `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
         `column2` VARCHAR(255) NOT NULL,
         PRIMARY KEY (`column1`)
       );
@@ -62,8 +63,6 @@ describe Scheman::Diff do
         );
 
         ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL;
-
-        ALTER TABLE `table1` DROP COLUMN `column1`;
 
         DROP TABLE `table2`;
 

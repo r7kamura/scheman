@@ -21,6 +21,7 @@ SQL
 
 after = <<-SQL
 CREATE TABLE `table1` (
+  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
   `column2` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`column1`)
 );
@@ -47,8 +48,6 @@ CREATE TABLE `table3` (
 );
 
 ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL;
-
-ALTER TABLE `table1` DROP COLUMN `column1`;
 
 DROP TABLE `table2`;
 
