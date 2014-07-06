@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = Scheman::VERSION
   spec.authors       = ["Ryo Nakamura"]
   spec.email         = ["r7kamura@gmail.com"]
-  spec.summary       = "Manage database schema based on schema definition file."
+  spec.summary       = "SQL schema parser."
   spec.homepage      = "https://github.com/r7kamura/scheman"
   spec.license       = "MIT"
 

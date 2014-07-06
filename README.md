@@ -1,5 +1,5 @@
 # Scheman
-Manage database schema based on schema definition file.
+SQL schema parser.
 
 ## Usage
 Creates Diff with 2 schema files and logs out their diff.
