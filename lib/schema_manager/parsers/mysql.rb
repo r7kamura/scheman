@@ -255,7 +255,7 @@ module SchemaManager
         end
 
         rule(:field_qualifiers) do
-          (spaces? >> field_qualifier).repeat.as(:field_qualifiers)
+          (field_qualifier >> (spaces >> field_qualifier).repeat).as(:field_qualifiers)
         end
 
         # TODO: default value, on update
@@ -443,12 +443,17 @@ module SchemaManager
           identifier.to_s
         end
 
-        # @example
-        # {
-        #   name: "id",
-        #   type: "integer"
-        #   qualifiers: [...],
-        # }
+        rule(
+          field_type_name: simple(:field_type_name),
+          field_name: simple(:field_name),
+        ) do
+          {
+            name: field_name.to_s,
+            type: field_type_name.to_s.downcase,
+            qualifiers: [],
+          }
+        end
+
         rule(
           field_type_name: simple(:field_type_name),
           field_name: simple(:field_name),
@@ -457,7 +462,7 @@ module SchemaManager
           {
             name: field_name.to_s,
             type: field_type_name.to_s.downcase,
-            qualifiers: field_qualifiers,
+            qualifiers: Array.wrap(field_qualifiers),
           }
         end
 
