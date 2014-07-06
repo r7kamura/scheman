@@ -37,12 +37,25 @@ module SchemaManager
     # TODO
     # @return [Array<Hash>] ALTER TABLE statements we need to apply
     def alter_tables
-      after_schema.tables.each do |after_table|
-        table_name = after_table[:name]
-        if before_table = before_schema.tables_indexed_by_name[table_name]
+      after_schema.tables.inject([]) do |result, after_table|
+        if before_table = before_schema.tables_indexed_by_name[after_table.name]
+          after_table.fields.each do |after_field|
+            unless before_table.fields_indexed_by_name[after_field.name]
+              result << {
+                add_field: after_field.to_hash.merge(table_name: after_table.name),
+              }
+              # A new field was added
+            end
+          end
+
+          before_table.fields.each do |before_field|
+            unless after_table.fields_indexed_by_name[before_field.name]
+              # A field was removed
+            end
+          end
         end
+        result
       end
-      []
     end
 
     # @return [Array<Hash>] DROP TABLE statements we need to apply

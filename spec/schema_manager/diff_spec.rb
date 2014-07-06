@@ -62,6 +62,8 @@ describe SchemaManager::Diff do
           PRIMARY KEY (`column1`)
         );
 
+        ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR NOT NULL;
+
         DROP TABLE `table2`;
 
         SET foreign_key_checks=1;

@@ -59,6 +59,10 @@ module SchemaManager
         rule(index: subtree(:index)) do
           Index.new(index)
         end
+
+        rule(add_field: subtree(:add_field)) do
+          AddField.new(add_field)
+        end
       end
 
       class Node
@@ -97,6 +101,22 @@ module SchemaManager
       class AlterTable < Node
         def to_s
           "TODO"
+        end
+      end
+
+      class AddField < Node
+        def to_s
+          "ALTER TABLE `#{table_name}` ADD COLUMN #{field};"
+        end
+
+        private
+
+        def table_name
+          @element[:table_name]
+        end
+
+        def field
+          Field.new(@element)
         end
       end
 
