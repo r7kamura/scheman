@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe SchemaManager::Diff do
+describe Scheman::Diff do
   let(:instance) do
     described_class.new(args)
   end

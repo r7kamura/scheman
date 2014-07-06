@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   module Parsers
     class Mysql < Base
       def self.parser
@@ -10,7 +10,7 @@ module SchemaManager
       end
 
       # @param schema [String]
-      # @return [SchemaManager::Schema]
+      # @return [Scheman::Schema]
       def self.parse(schema)
         Schema.new(
           transform.apply(

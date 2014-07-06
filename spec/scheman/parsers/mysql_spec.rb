@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe SchemaManager::Parsers::Mysql do
+describe Scheman::Parsers::Mysql do
   let(:instance) do
     described_class.new
   end

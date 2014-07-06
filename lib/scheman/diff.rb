@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   class Diff
     # @param before [String] The previous schema
     # @param after [String] The next schema
@@ -6,7 +6,7 @@ module SchemaManager
     # @param before_type [String] Specify the type of the previous schema if needed
     # @param after_type [String] Specify the type of the next schema if needed
     # @param output_type [String] Specify the type of the output schema if needed
-    # @raise [SchemaManager::Errors::ParserNotFound]
+    # @raise [Scheman::Errors::ParserNotFound]
     def initialize(before: nil, after: nil, type: nil, before_type: nil, after_type: nil, output_type: nil)
       @before = before
       @after = after
@@ -87,29 +87,29 @@ module SchemaManager
       @table_names_to_drop ||= before_schema.table_names - after_schema.table_names
     end
 
-    # @return [SchemaManager::Schema]
+    # @return [Scheman::Schema]
     def before_schema
       @before_schema ||= before_parser.parse(@before)
     end
 
-    # @return [SchemaManager::Schema]
+    # @return [Scheman::Schema]
     def after_schema
       @after_schema ||= after_parser.parse(@after)
     end
 
-    # @return [SchemaManager::Parsers::Base]
-    # @raise [SchemaManager::Errors::ParserNotFound]
+    # @return [Scheman::Parsers::Base]
+    # @raise [Scheman::Errors::ParserNotFound]
     def before_parser
       @before_parser ||= ParserBuilder.build(before_type)
     end
 
-    # @return [SchemaManager::Parsers::Base]
-    # @raise [SchemaManager::Errors::ParserNotFound]
+    # @return [Scheman::Parsers::Base]
+    # @raise [Scheman::Errors::ParserNotFound]
     def after_parser
       @after_parser ||= ParserBuilder.build(after_type)
     end
 
-    # @raise [SchemaManager::Errors::ParserNotFound]
+    # @raise [Scheman::Errors::ParserNotFound]
     def validate!
       before_parser
       after_parser

@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   module Views
     class Base
     end

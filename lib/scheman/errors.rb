@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   module Errors
     class Base < StandardError
     end

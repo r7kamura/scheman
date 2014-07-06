@@ -1,7 +1,7 @@
-module SchemaManager
+module Scheman
   class ParserBuilder
     # @param type [String] A type of parser (e.g. "mysql")
-    # @return [SchemaManager::Parsers::Base]
+    # @return [Scheman::Parsers::Base]
     def self.build(type)
       new(type).build
     end

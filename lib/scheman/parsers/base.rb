@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   module Parsers
     class Base
       def initialize(options = {})

@@ -1,4 +1,4 @@
-module SchemaManager
+module Scheman
   module Views
     class Mysql < Base
       def self.transform

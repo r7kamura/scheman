@@ -1,5 +1,5 @@
 require "active_support/core_ext/string/strip"
-require "schema_manager"
+require "scheman"
 require "pathname"
 require "pp"
 

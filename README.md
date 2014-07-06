@@ -1,4 +1,4 @@
-# SchemaManager
+# Scheman
 Manage database schema based on schema definition file.
 
 ## Usage
@@ -29,7 +29,7 @@ CREATE TABLE `table3` (
 );
 SQL
 
-puts SchemaManager::Diff.new(before: before, after: after, type: "mysql")
+puts Scheman::Diff.new(before: before, after: after, type: "mysql")
 ```
 
 The result would be the following:
