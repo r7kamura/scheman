@@ -63,6 +63,10 @@ module SchemaManager
         rule(add_field: subtree(:add_field)) do
           AddField.new(add_field)
         end
+
+        rule(drop_field: subtree(:drop_field)) do
+          DropField.new(drop_field)
+        end
       end
 
       class Node
@@ -104,19 +108,35 @@ module SchemaManager
         end
       end
 
-      class AddField < Node
+      class AlterField < Node
+        private
+
+        def table_name
+          @element[:table_name]
+        end
+      end
+
+      class AddField < AlterField
         def to_s
           "ALTER TABLE `#{table_name}` ADD COLUMN #{field};"
         end
 
         private
 
-        def table_name
-          @element[:table_name]
-        end
-
         def field
           Field.new(@element)
+        end
+      end
+
+      class DropField < AlterField
+        def to_s
+          "ALTER TABLE `#{table_name}` DROP COLUMN `#{field_name}`;"
+        end
+
+        private
+
+        def field_name
+          @element[:name]
         end
       end
 

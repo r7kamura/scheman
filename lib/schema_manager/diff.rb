@@ -44,13 +44,14 @@ module SchemaManager
               result << {
                 add_field: after_field.to_hash.merge(table_name: after_table.name),
               }
-              # A new field was added
             end
           end
 
           before_table.fields.each do |before_field|
             unless after_table.fields_indexed_by_name[before_field.name]
-              # A field was removed
+              result << {
+                drop_field: before_field.to_hash.merge(table_name: after_table.name),
+              }
             end
           end
         end
