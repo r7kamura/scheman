@@ -13,6 +13,10 @@ describe SchemaManager::Diff do
     }
   end
 
+  let(:type) do
+    "mysql"
+  end
+
   let(:before_schema) do
     <<-EOS.strip_heredoc
       CREATE TABLE `table1` (
@@ -35,32 +39,6 @@ describe SchemaManager::Diff do
         PRIMARY KEY (`column1`)
       );
     EOS
-  end
-
-  let(:type) do
-    "mysql"
-  end
-
-  describe ".new" do
-    subject do
-      instance
-    end
-
-    context "with invalid type argument" do
-      let(:type) do
-        "invalid"
-      end
-
-      it "raises SchemaManager::Errors::ParserNotFound" do
-        expect { subject }.to raise_error(SchemaManager::Errors::ParserNotFound)
-      end
-    end
-
-    context "with valid condition" do
-      it "returns a SchemaManager::Diff" do
-        should be_a SchemaManager::Diff
-      end
-    end
   end
 
   describe "#to_s" do
