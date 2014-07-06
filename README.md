@@ -9,12 +9,12 @@ require "scheman"
 
 before = <<-SQL
 CREATE TABLE `table1` (
-  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
   PRIMARY KEY (`column1`)
 );
 
 CREATE TABLE `table2` (
-  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
   PRIMARY KEY (`column1`)
 );
 SQL
@@ -26,7 +26,7 @@ CREATE TABLE `table1` (
 );
 
 CREATE TABLE `table3` (
-  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
   PRIMARY KEY (`column1`)
 );
 SQL
@@ -42,7 +42,7 @@ BEGIN;
 SET foreign_key_checks=0;
 
 CREATE TABLE `table3` (
-  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
   PRIMARY KEY (`column1`)
 );
 

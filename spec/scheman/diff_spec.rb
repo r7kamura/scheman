@@ -20,12 +20,12 @@ describe Scheman::Diff do
   let(:before_schema) do
     <<-EOS.strip_heredoc
       CREATE TABLE `table1` (
-        `column1` INTEGER NOT NULL AUTO INCREMENT,
+        `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
         PRIMARY KEY (`column1`)
       );
 
       CREATE TABLE `table2` (
-        `column1` INTEGER NOT NULL AUTO INCREMENT,
+        `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
         PRIMARY KEY (`column1`)
       );
     EOS
@@ -39,7 +39,7 @@ describe Scheman::Diff do
       );
 
       CREATE TABLE `table3` (
-        `column1` INTEGER NOT NULL AUTO INCREMENT,
+        `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
         PRIMARY KEY (`column1`)
       );
     EOS
@@ -57,7 +57,7 @@ describe Scheman::Diff do
         SET foreign_key_checks=0;
 
         CREATE TABLE `table3` (
-          `column1` INTEGER NOT NULL AUTO INCREMENT,
+          `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
           PRIMARY KEY (`column1`)
         );
 

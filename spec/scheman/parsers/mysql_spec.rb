@@ -29,7 +29,7 @@ describe Scheman::Parsers::Mysql do
           CREATE DATABASE database_name;
 
           CREATE TABLE `table1` (
-            `column1` INTEGER NOT NULL AUTO INCREMENT,
+            `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`column1`)
           );
@@ -55,7 +55,7 @@ describe Scheman::Parsers::Mysql do
                   field: {
                     name: "column1",
                     type: "integer",
-                    values: [],
+                    values: ["11"],
                     qualifiers: [
                       {
                         qualifier: {
