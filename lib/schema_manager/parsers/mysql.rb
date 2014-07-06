@@ -61,7 +61,7 @@ module SchemaManager
         end
 
         def comma_separated(value)
-          value >> (str(",") >> spaces >> value).repeat
+          value >> (str(",") >> spaces? >> value).repeat
         end
 
         root(:statements)
@@ -92,7 +92,7 @@ module SchemaManager
         end
 
         rule(:spaces) do
-          space.repeat
+          space.repeat(1)
         end
 
         rule(:spaces?) do
@@ -149,7 +149,7 @@ module SchemaManager
 
         rule(:create_table) do
           create_table_beginning >> spaces >> table_name >>
-            spaces >> table_components >> eol
+            spaces? >> table_components >> eol
         end
 
         rule(:table_components) do
@@ -204,12 +204,12 @@ module SchemaManager
         rule(:normal_index) do
           word_index >> spaces >> index_name >>
             optional_using_index_type >>
-            parenthetical(comma_separated(column_name_with_optional_values)) >>
+            spaces >> parenthetical(comma_separated(column_name_with_optional_values)) >>
             optional_using_index_type
         end
 
         rule(:optional_using_index_type) do
-          spaces >> (using_index_type >> spaces).maybe
+          (spaces >> using_index_type).maybe
         end
 
         rule(:using_index_type) do
@@ -224,7 +224,7 @@ module SchemaManager
         rule(:fulltext_index) do
           (
             case_insensitive_str("fulltext") >> spaces >>
-              (word_index >> space >> spaces).maybe >>
+              (word_index >> spaces).maybe >>
               (index_name >> spaces).maybe >>
               parenthetical(comma_separated(column_name_with_optional_values))
           ).as(:fulltext_index)
@@ -233,7 +233,7 @@ module SchemaManager
         rule(:spatial_index) do
           (
             case_insensitive_str("spatial") >> spaces >>
-              (word_index >> space >> spaces).maybe >>
+              (word_index >> spaces).maybe >>
               (index_name >> spaces).maybe >>
               parenthetical(comma_separated(column_name_with_optional_values))
           ).as(:spatial_index)
@@ -312,7 +312,7 @@ module SchemaManager
 
         rule(:field_type) do
           field_type_name >>
-            (spaces >> parenthetical(comma_separated(value))).repeat >>
+            (spaces? >> parenthetical(comma_separated(value))).repeat >>
             (spaces >> type_qualifier).repeat
         end
 
@@ -325,7 +325,7 @@ module SchemaManager
         end
 
         rule(:column_name_with_optional_values) do
-          column_name >> (spaces >> parenthetical(comma_separated(value))).maybe
+          column_name >> (spaces? >> parenthetical(comma_separated(value))).maybe
         end
 
         rule(:column_name) do
