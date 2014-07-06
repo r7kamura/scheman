@@ -312,7 +312,7 @@ module SchemaManager
 
         rule(:field_type) do
           field_type_name >>
-            (spaces? >> parenthetical(comma_separated(value))).repeat >>
+            (spaces? >> parenthetical(comma_separated(value))).maybe >>
             (spaces >> type_qualifier).repeat
         end
 
