@@ -5,11 +5,31 @@ Manage database schema based on schema definition file.
 Creates Diff with 2 schema files and logs out their diff.
 
 ```ruby
-puts SchemaManager::Diff.new(
-  before: File.read("before.sql"),
-  after: File.read("after.sql"),
-  type: "mysql"
-)
+before = <<-SQL
+CREATE TABLE `table1` (
+  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  PRIMARY KEY (`column1`)
+);
+
+CREATE TABLE `table2` (
+  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  PRIMARY KEY (`column1`)
+);
+SQL
+
+after = <<-SQL
+CREATE TABLE `table1` (
+  `column2` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`column1`)
+);
+
+CREATE TABLE `table3` (
+  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  PRIMARY KEY (`column1`)
+);
+SQL
+
+puts SchemaManager::Diff.new(before: before, after: after, type: "mysql")
 ```
 
 The result would be the following:
@@ -19,24 +39,18 @@ BEGIN;
 
 SET foreign_key_checks=0;
 
-CREATE TABLE `items` (
-  `id` integer(10) unsigned NOT NULL auto_increment,
-  `user_id` integer(10) unsigned NOT NULL,
-  `name` varchar(255) NULL DEFAULT NULL,
-  INDEX `user_id` (`user_id`),
-  PRIMARY KEY (`id`)
+CREATE TABLE `table3` (
+  `column1` INTEGER NOT NULL AUTO INCREMENT,
+  PRIMARY KEY (`column1`)
 );
+
+ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL;
+
+ALTER TABLE `table1` DROP COLUMN `column1`;
+
+DROP TABLE `table2`;
 
 SET foreign_key_checks=1;
 
 COMMIT;
 ```
-
-## Note
-So far, we are aimed at supporting MySQL for the 1st prototype.
-
-### TODO
-There are a lot of things to do. We welcome your contributions!
-
-* Geenrate SchemaManager::Diff from 2 SchemaManager::Schema
-* Generate SQL representation from SchemaManager::Diff
