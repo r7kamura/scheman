@@ -352,48 +352,5 @@ describe SchemaManager::Parsers::Mysql do
         }
       end
     end
-
-    context "with CREATE TABLE" do
-      let(:str) do
-        <<-EOS.strip_heredoc
-          CREATE TABLE `table1` (
-            `column1` INTEGER NOT NULL AUTO INCREMENT,
-            PRIMARY KEY (`column1`)
-          );
-        EOS
-      end
-
-      it "succeeds in parse" do
-        should == [
-          {
-            create_table: {
-              name: "table1",
-              fields: [
-                {
-                  name: "column1",
-                  type: "integer",
-                  qualifiers: [
-                    {
-                      type: :not_null,
-                    },
-                    {
-                      type: :auto_increment,
-                    },
-                  ],
-                },
-              ],
-              indices: [
-                {
-                  column: "column1",
-                  primary: true,
-                  name: nil,
-                  type: nil,
-                },
-              ],
-            },
-          },
-        ]
-      end
-    end
   end
 end
