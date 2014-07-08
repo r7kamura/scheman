@@ -42,14 +42,14 @@ module Scheman
         @table[:name]
       end
 
-      # @return [Array]
+      # @return [Array<Field>]
       def fields
         @table[:fields].map do |field|
           Field.new(field: field[:field], table: self)
         end
       end
 
-      # @return [Hash]
+      # @return [Hash{String => Field}]
       def fields_indexed_by_name
         @fields_indexed_by_name ||= fields.index_by(&:name)
       end
