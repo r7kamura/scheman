@@ -266,12 +266,7 @@ module Scheman
             auto_increment_qualifier |
             character_set_qualifier |
             collate_qualifier |
-            unique_key_qualifier |
-            key_qualifier
-        end
-
-        rule(:key_qualifier) do
-          word_index.as(:key_qualifier)
+            unique_key_qualifier
         end
 
         rule(:unique_key_qualifier) do
@@ -287,7 +282,7 @@ module Scheman
         end
 
         rule(:primary_key_qualifier) do
-          case_insensitive_str("primary key").as(:primary_key_qualifier)
+          (word_index | case_insensitive_str("primary key")).as(:primary_key_qualifier)
         end
 
         rule(:null_qualifier) do

@@ -167,7 +167,7 @@ describe Scheman::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "primary_key"
       end
     end
 
@@ -177,7 +177,7 @@ describe Scheman::Parsers::Mysql do
       end
 
       it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "primary_key"
       end
     end
 
