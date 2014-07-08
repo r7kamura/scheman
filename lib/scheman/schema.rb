@@ -20,7 +20,6 @@ module Scheman
       @tables_indexed_by_name ||= tables.index_by(&:name)
     end
 
-    # TODO: We might want to calculate DROP TABLE and ALTER TABLE against to created tables
     # @return [Array<Scheman::Schema::Table>] All tables to be created after applying this schema
     def tables
       @tables ||= create_tables.map do |create_table|
