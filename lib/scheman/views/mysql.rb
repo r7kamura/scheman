@@ -85,7 +85,18 @@ module Scheman
         end
       end
 
-      class AlterTables < Statements
+      class AlterTables < Node
+        def to_s
+          alter_tables.join("\n\n")
+        end
+
+        private
+
+        def alter_tables
+          @element.group_by(&:table_name).map do |table_name, alter_tables|
+            %<ALTER TABLE `#{table_name}` #{alter_tables.join(",\n  ")};>
+          end.sort
+        end
       end
 
       class DropTables < Statements
@@ -107,8 +118,6 @@ module Scheman
       end
 
       class AlterTable < Node
-        private
-
         def table_name
           @element[:table_name]
         end
@@ -116,7 +125,7 @@ module Scheman
 
       class AlterField < AlterTable
         def to_s
-          "ALTER TABLE `#{table_name}` CHANGE COLUMN #{field_definition};"
+          "CHANGE COLUMN #{field_definition}"
         end
 
         private
@@ -128,7 +137,7 @@ module Scheman
 
       class AddField < AlterTable
         def to_s
-          "ALTER TABLE `#{table_name}` ADD COLUMN #{field_definition};"
+          "ADD COLUMN #{field_definition}"
         end
 
         private
@@ -140,7 +149,7 @@ module Scheman
 
       class DropField < AlterTable
         def to_s
-          "ALTER TABLE `#{table_name}` DROP COLUMN `#{field_name}`;"
+          "DROP COLUMN `#{field_name}`"
         end
 
         private
