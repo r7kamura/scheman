@@ -67,6 +67,10 @@ module Scheman
         rule(drop_field: subtree(:drop_field)) do
           DropField.new(drop_field)
         end
+
+        rule(alter_field: subtree(:alter_field)) do
+          AlterField.new(alter_field)
+        end
       end
 
       class Node
@@ -103,12 +107,6 @@ module Scheman
       end
 
       class AlterTable < Node
-        def to_s
-          "TODO"
-        end
-      end
-
-      class AlterField < Node
         private
 
         def table_name
@@ -116,19 +114,31 @@ module Scheman
         end
       end
 
-      class AddField < AlterField
+      class AlterField < AlterTable
         def to_s
-          "ALTER TABLE `#{table_name}` ADD COLUMN #{field};"
+          "ALTER TABLE `#{table_name}` CHANGE COLUMN #{field_definition};"
         end
 
         private
 
-        def field
+        def field_definition
           Field.new(@element)
         end
       end
 
-      class DropField < AlterField
+      class AddField < AlterTable
+        def to_s
+          "ALTER TABLE `#{table_name}` ADD COLUMN #{field_definition};"
+        end
+
+        private
+
+        def field_definition
+          Field.new(@element)
+        end
+      end
+
+      class DropField < AlterTable
         def to_s
           "ALTER TABLE `#{table_name}` DROP COLUMN `#{field_name}`;"
         end

@@ -36,7 +36,7 @@ module Scheman
 
     # @return [Array<Hash>] ALTER TABLE statements we need to apply
     def alter_tables
-      add_fields + drop_fields
+      add_fields + drop_fields + alter_fields
     end
 
     # @return [Array<Hash>] ALTER TABLE statements for adding new fields
@@ -62,6 +62,21 @@ module Scheman
             unless after_table.fields_indexed_by_name[before_field.name]
               result << {
                 drop_field: before_field.to_hash.merge(table_name: after_table.name),
+              }
+            end
+          end
+        end
+      end
+    end
+
+    # @return [Array<Hash>] ALTER TABLE statements for altering fields
+    def alter_fields
+      after_schema.tables.each_with_object([]) do |after_table, result|
+        if before_table = before_schema.tables_indexed_by_name[after_table.name]
+          after_table.fields.each do |after_field|
+            if before_field = before_table.fields_indexed_by_name[after_field.name]
+              result << {
+                alter_field: after_field.to_hash.merge(table_name: after_table.name),
               }
             end
           end

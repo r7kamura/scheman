@@ -46,7 +46,7 @@ module Scheman
       # @return [Array]
       def fields
         @table[:fields].map do |field|
-          Field.new(field[:field])
+          Field.new(field: field[:field], table: self)
         end
       end
 
@@ -57,8 +57,20 @@ module Scheman
     end
 
     class Field
-      def initialize(field)
+      def initialize(field: nil, table: nil)
         @field = field
+        @table = table
+      end
+
+      # @note Overridden
+      # @return [true, false]
+      def ==(field)
+        type == field.type && size == field.size && qualifiers == field.qualifiers
+      end
+
+      # @return [Hash]
+      def to_hash
+        @field.merge(qualifiers: qualifiers)
       end
 
       # @return [String]
@@ -66,9 +78,24 @@ module Scheman
         @field[:name]
       end
 
-      # @return [Hash]
-      def to_hash
-        @field
+      # @return [String] Lower-cased type name
+      # @example
+      #   "varchar"
+      def type
+        @field[:type]
+      end
+
+      # @note Size can be 2 values but not supported yet
+      # @return [String, nil]
+      def size
+        field[:size]
+      end
+
+      # @return [Array<Hash>] Sorted qualifiers, without primary_key
+      def qualifiers
+        @qualifiers ||= @field[:qualifiers].reject do |qualifier|
+          qualifier[:qualifier][:type] == "primary_key"
+        end
       end
     end
   end
