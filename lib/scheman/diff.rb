@@ -34,9 +34,13 @@ module Scheman
 
     private
 
-    # TODO
     # @return [Array<Hash>] ALTER TABLE statements we need to apply
     def alter_tables
+      add_fields + drop_fields
+    end
+
+    # @return [Array<Hash>] ALTER TABLE statements for adding new fields
+    def add_fields
       after_schema.tables.inject([]) do |result, after_table|
         if before_table = before_schema.tables_indexed_by_name[after_table.name]
           after_table.fields.each do |after_field|
@@ -46,7 +50,15 @@ module Scheman
               }
             end
           end
+        end
+        result
+      end
+    end
 
+    # @return [Array<Hash>] ALTER TABLE statements for dropping fields
+    def drop_fields
+      after_schema.tables.inject([]) do |result, after_table|
+        if before_table = before_schema.tables_indexed_by_name[after_table.name]
           before_table.fields.each do |before_field|
             unless after_table.fields_indexed_by_name[before_field.name]
               result << {
