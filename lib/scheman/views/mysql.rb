@@ -75,6 +75,10 @@ module Scheman
         rule(add_index: subtree(:add_index)) do
           AddIndex.new(add_index)
         end
+
+        rule(drop_index: subtree(:drop_index)) do
+          DropIndex.new(drop_index)
+        end
       end
 
       class Node
@@ -170,11 +174,8 @@ module Scheman
 
         private
 
-        def index
-          str = ""
-          str << "#{index_name} " if index_name
-          str << "#{index_type} " if index_type
-          str << "`#{index_column}`"
+        def index_name
+          @element[:name]
         end
 
         def index_definition_name
@@ -188,16 +189,36 @@ module Scheman
           end
         end
 
-        def index_name
-          @element[:name]
-        end
-
         def index_type
           @element[:type]
         end
 
         def index_column
           @element[:column]
+        end
+
+        def index
+          str = ""
+          str << "#{index_name} " if index_name
+          str << "#{index_type} " if index_type
+          str << "`#{index_column}`"
+        end
+      end
+
+      class DropIndex < AlterTable
+        def to_s
+          if @element[:primary]
+            "DROP PRIMARY KEY"
+          else
+            "DROP INDEX `#{index_name}`"
+          end
+        end
+
+        private
+
+        # TODO How to refer to an automatically named index name?
+        def index_name
+          @element[:name] || @element[:column]
         end
       end
 

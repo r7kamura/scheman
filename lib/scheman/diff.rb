@@ -36,7 +36,7 @@ module Scheman
 
     # @return [Array<Hash>] ALTER TABLE statements we need to apply
     def alter_tables
-      add_fields + drop_fields + alter_fields + add_indices
+      drop_fields + add_fields + alter_fields + drop_indices + add_indices
     end
 
     # @return [Array<Hash>] ALTER TABLE statements for adding new fields
@@ -91,6 +91,19 @@ module Scheman
           (after_table.indices - before_table.indices).each do |index|
             result << {
               add_index: index.merge(table_name: after_table.name),
+            }
+          end
+        end
+      end
+    end
+
+    # @return [Array<Hash>] ALTER TABLE statements for dropping indices
+    def drop_indices
+      after_schema.tables.each_with_object([]) do |after_table, result|
+        if before_table = before_schema.tables_indexed_by_name[after_table.name]
+          (before_table.indices - after_table.indices).each do |index|
+            result << {
+              drop_index: index.merge(table_name: after_table.name),
             }
           end
         end
