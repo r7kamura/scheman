@@ -161,6 +161,26 @@ describe Scheman::Parsers::Mysql do
       end
     end
 
+    context "with KEY field qualifier" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER KEY);"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
+      end
+    end
+
+    context "with INDEX field qualifier" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER INDEX);"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
+      end
+    end
+
     context "with UNSIGNED field type qualifier" do
       let(:str) do
         "CREATE TABLE `table1` (`column1` INTEGER UNSIGNED);"
@@ -218,26 +238,6 @@ describe Scheman::Parsers::Mysql do
 
       it "succeeds in parse" do
         subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "unique_key"
-      end
-    end
-
-    context "with KEY field qualifier" do
-      let(:str) do
-        "CREATE TABLE `table1` (`column1` INTEGER KEY);"
-      end
-
-      it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
-      end
-    end
-
-    context "with INDEX field qualifier" do
-      let(:str) do
-        "CREATE TABLE `table1` (`column1` INTEGER INDEX);"
-      end
-
-      it "succeeds in parse" do
-        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier][:type].should == "key"
       end
     end
 
