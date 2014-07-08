@@ -53,6 +53,24 @@ module Scheman
       def fields_indexed_by_name
         @fields_indexed_by_name ||= fields.index_by(&:name)
       end
+
+      # @return [Array<Hash>]
+      def indices
+        @indices ||= indices_from_definitions + indices_from_fields
+      end
+
+      private
+
+      def indices_from_definitions
+        @table[:indices].map do |hash|
+          hash[:index]
+        end
+      end
+
+      # @return [Array<Hash>]
+      def indices_from_fields
+        fields.map(&:index).compact
+      end
     end
 
     class Field
@@ -90,10 +108,33 @@ module Scheman
         field[:size]
       end
 
-      # @return [Array<Hash>] Sorted qualifiers, without primary_key
+      # @return [Array<Hash>] Sorted qualifiers, without index-related types
       def qualifiers
         @qualifiers ||= @field[:qualifiers].reject do |qualifier|
-          qualifier[:qualifier][:type] == "primary_key"
+          %w[primary_key unique_key].include?(qualifier[:qualifier][:type])
+        end
+      end
+
+      # @return [Hash] Index defined as a field qualifier
+      def index
+        @field[:qualifiers].find do |qualifier|
+          case qualifier[:qualifier][:type]
+          when "primary_key"
+            break {
+              column: name,
+              name: nil,
+              primary: true,
+              type: nil,
+            }
+          when "unique_key"
+            break {
+              column: name,
+              name: nil,
+              primary: nil,
+              type: nil,
+              unique: true,
+            }
+          end
         end
       end
     end

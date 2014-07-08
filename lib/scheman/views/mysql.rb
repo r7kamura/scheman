@@ -71,6 +71,10 @@ module Scheman
         rule(alter_field: subtree(:alter_field)) do
           AlterField.new(alter_field)
         end
+
+        rule(add_index: subtree(:add_index)) do
+          AddIndex.new(add_index)
+        end
       end
 
       class Node
@@ -156,6 +160,44 @@ module Scheman
 
         def field_name
           @element[:name]
+        end
+      end
+
+      class AddIndex < AlterTable
+        def to_s
+          "ADD #{index_definition_name} #{index}"
+        end
+
+        private
+
+        def index
+          str = ""
+          str << "#{index_name} " if index_name
+          str << "#{index_type} " if index_type
+          str << "`#{index_column}`"
+        end
+
+        def index_definition_name
+          case
+          when @element[:primary]
+            "PRIMARY KEY"
+          when @element[:unique]
+            "UNIQUE KEY"
+          else
+            "KEY"
+          end
+        end
+
+        def index_name
+          @element[:name]
+        end
+
+        def index_type
+          @element[:type]
+        end
+
+        def index_column
+          @element[:column]
         end
       end
 

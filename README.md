@@ -9,8 +9,7 @@ require "scheman"
 
 before = <<-SQL
 CREATE TABLE `table1` (
-  `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
-  PRIMARY KEY (`column1`)
+  `column1` INTEGER(11) PRIMARY KEY NOT NULL AUTO INCREMENT
 );
 
 CREATE TABLE `table2` (
@@ -23,7 +22,7 @@ after = <<-SQL
 CREATE TABLE `table1` (
   `column1` CHAR(11) NOT NULL AUTO INCREMENT,
   `column2` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`column1`)
+  PRIMARY KEY (`column2`)
 );
 
 CREATE TABLE `table3` (
@@ -48,7 +47,8 @@ CREATE TABLE `table3` (
 );
 
 ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL,
-  CHANGE COLUMN `column1` CHAR(11) NOT NULL AUTO INCREMENT;
+  CHANGE COLUMN `column1` CHAR(11) NOT NULL AUTO INCREMENT,
+  ADD PRIMARY KEY `column2`;
 
 DROP TABLE `table2`;
 

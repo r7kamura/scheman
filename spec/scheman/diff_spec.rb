@@ -20,8 +20,7 @@ describe Scheman::Diff do
   let(:before_schema) do
     <<-EOS.strip_heredoc
       CREATE TABLE `table1` (
-        `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
-        PRIMARY KEY (`column1`)
+        `column1` INTEGER(11) PRIMARY KEY NOT NULL AUTO INCREMENT
       );
 
       CREATE TABLE `table2` (
@@ -36,7 +35,7 @@ describe Scheman::Diff do
       CREATE TABLE `table1` (
         `column1` CHAR(11) NOT NULL AUTO INCREMENT,
         `column2` VARCHAR(255) NOT NULL,
-        PRIMARY KEY (`column1`)
+        PRIMARY KEY (`column2`)
       );
 
       CREATE TABLE `table3` (
@@ -63,7 +62,8 @@ describe Scheman::Diff do
         );
 
         ALTER TABLE `table1` ADD COLUMN `column2` VARCHAR(255) NOT NULL,
-          CHANGE COLUMN `column1` CHAR(11) NOT NULL AUTO INCREMENT;
+          CHANGE COLUMN `column1` CHAR(11) NOT NULL AUTO INCREMENT,
+          ADD PRIMARY KEY `column2`;
 
         DROP TABLE `table2`;
 
