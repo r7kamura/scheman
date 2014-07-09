@@ -241,6 +241,114 @@ describe Scheman::Parsers::Mysql do
       end
     end
 
+    context "with DEFAULT CURRENT_TIMESTAMP()" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER DEFAULT CURRENT_TIMESTAMP());"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "current_timestamp",
+              value: nil,
+            },
+          },
+        }
+      end
+    end
+
+    context "with DEFAULT NOW()" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER DEFAULT NOW());"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "current_timestamp",
+              value: nil,
+            },
+          },
+        }
+      end
+    end
+
+    context "with DEFAULT with double quoted value" do
+      let(:str) do
+        %<CREATE TABLE `table1` (`column1` INTEGER DEFAULT "a");>
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "string",
+              value: "a",
+            },
+          },
+        }
+      end
+    end
+
+    context "with DEFAULT with single quoted value" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER DEFAULT 'a');"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "string",
+              value: "a",
+            },
+          },
+        }
+      end
+    end
+
+    context "with DEFAULT with bit value" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER DEFAULT b'1111');"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "bit",
+              value: 15,
+            },
+          },
+        }
+      end
+    end
+
+    context "with DEFAULT with unclassified value" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER DEFAULT 0);"
+      end
+
+      it "succeeds in parse" do
+        subject[0][:create_table][:fields][0][:field][:qualifiers][0][:qualifier].should == {
+          type: "default",
+          value: {
+            default_value: {
+              type: "unclassified",
+              value: "0",
+            },
+          },
+        }
+      end
+    end
+
     context "with PRIMARY KEY" do
       let(:str) do
         <<-EOS.strip_heredoc

@@ -75,9 +75,11 @@ module Scheman
         if before_table = before_schema.tables_indexed_by_name[after_table.name]
           after_table.fields.each do |after_field|
             if before_field = before_table.fields_indexed_by_name[after_field.name]
-              result << {
-                alter_field: after_field.to_hash.merge(table_name: after_table.name),
-              }
+              if after_field != before_field
+                result << {
+                  alter_field: after_field.to_hash.merge(table_name: after_table.name),
+                }
+              end
             end
           end
         end

@@ -1,3 +1,6 @@
+## 0.0.3
+* Support DEFAULT field qualifier
+
 ## 0.0.2
 * Support ADD INDEX
 * Support DROP INDEX

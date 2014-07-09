@@ -79,6 +79,10 @@ module Scheman
         rule(drop_index: subtree(:drop_index)) do
           DropIndex.new(drop_index)
         end
+
+        rule(default_value: subtree(:tree)) do
+          DefaultValue.new(tree)
+        end
       end
 
       class Node
@@ -341,6 +345,19 @@ module Scheman
             "SPATIAL"
           else
             "KEY"
+          end
+        end
+      end
+
+      class DefaultValue < Node
+        def to_s
+          case @element[:type]
+          when "string"
+            @element[:value].inspect
+          when "current_timestamp"
+            "CURRENT_TIMESTAMP()"
+          else
+            @element[:value]
           end
         end
       end

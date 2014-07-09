@@ -105,7 +105,7 @@ module Scheman
       # @note Size can be 2 values but not supported yet
       # @return [String, nil]
       def size
-        field[:size]
+        @field[:size]
       end
 
       # @return [Array<Hash>] Sorted qualifiers, without index-related types

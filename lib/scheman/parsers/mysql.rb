@@ -99,6 +99,33 @@ module Scheman
           spaces.maybe
         end
 
+        rule(:string) do
+          (
+            single_quoted(
+              (
+                (str('\\') >> match('.')) |
+                  str("''") |
+                  match('[^\\\']')
+              ).repeat
+            ) | double_quoted(
+              (
+                (str('\\') >> match('.')) |
+                  str('""') |
+                  match('[^\\\"]')
+              ).repeat
+            )
+          ).as(:string)
+        end
+
+        rule(:bit) do
+          (
+            str("b") >> (
+              single_quoted(match("0|1").repeat(1, 64)) |
+                double_quoted(match("0|1").repeat(1, 64))
+            )
+          ).as(:bit)
+        end
+
         rule(:delimiter) do
           str(";")
         end
@@ -254,7 +281,7 @@ module Scheman
           (field_qualifier >> (spaces >> field_qualifier).repeat)
         end
 
-        # TODO: default value, on update
+        # TODO: on update
         rule(:field_qualifier) do
           not_null_qualifier |
             null_qualifier |
@@ -262,7 +289,26 @@ module Scheman
             auto_increment_qualifier |
             character_set_qualifier |
             collate_qualifier |
-            unique_key_qualifier
+            unique_key_qualifier |
+            default_qualifier
+        end
+
+        rule(:default_qualifier) do
+          (
+            case_insensitive_str("default") >> spaces >> default_value
+          ).as(:default_qualifier)
+        end
+
+        rule(:default_value) do
+          (current_timestamp | string | bit | unclassified_default_value).as(:default_value)
+        end
+
+        rule(:unclassified_default_value) do
+          (match('[\w\d:.-]')).repeat(1).as(:unclassified_default_value)
+        end
+
+        rule(:current_timestamp) do
+          (case_insensitive_str("current_timestamp()") | case_insensitive_str("now()")).as(:current_timestamp)
         end
 
         rule(:unique_key_qualifier) do
@@ -437,6 +483,28 @@ module Scheman
           identifier.to_s
         end
 
+        rule(string: simple(:value)) do
+          {
+            type: "string",
+            value: value.to_s[1..-2],
+          }
+        end
+
+        rule(bit: simple(:value)) do
+          {
+            type: "bit",
+            value: value.to_s[2..-2].to_i(2),
+          }
+        end
+
+
+        rule(unclassified_default_value: simple(:value)) do
+          {
+            type: "unclassified",
+            value: value.to_s,
+          }
+        end
+
         rule(field_value: simple(:field_value)) do
           field_value.to_s
         end
@@ -522,6 +590,21 @@ module Scheman
         rule(key_qualifier: simple(:key_qualifier)) do
           {
             type: "key",
+          }
+        end
+
+        rule(default_qualifier: subtree(:tree)) do
+          {
+            type: "default",
+            value: tree,
+          }
+        end
+
+        # @note We use Symbol to distinguish from string value
+        rule(current_timestamp: simple(:current_timestamp)) do
+          {
+            type: "current_timestamp",
+            value: nil,
           }
         end
 
