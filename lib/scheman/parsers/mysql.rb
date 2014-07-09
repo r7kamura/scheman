@@ -107,10 +107,6 @@ module Scheman
           spaces >> match('[\S]').repeat >> spaces
         end
 
-        rule(:string) do
-          any.repeat(1)
-        end
-
         rule(:eol) do
           delimiter >> spaces?
         end
