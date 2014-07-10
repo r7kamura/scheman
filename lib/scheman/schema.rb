@@ -45,7 +45,7 @@ module Scheman
       # @return [Array<Field>]
       def fields
         @table[:fields].map do |field|
-          Field.new(field: field[:field], table: self)
+          Field.new(field[:field])
         end
       end
 
@@ -74,9 +74,8 @@ module Scheman
     end
 
     class Field
-      def initialize(field: nil, table: nil)
+      def initialize(field)
         @field = field
-        @table = table
       end
 
       # @note Overridden
