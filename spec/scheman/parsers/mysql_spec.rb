@@ -504,5 +504,15 @@ describe Scheman::Parsers::Mysql do
         should == []
       end
     end
+
+    context "with multi-line comment" do
+      let(:str) do
+        "/ * xy * /"
+      end
+
+      it "succeeds in parse" do
+        should == []
+      end
+    end
   end
 end

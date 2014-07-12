@@ -19,13 +19,17 @@ module Scheman
 
       class Transform < Parslet::Transform
         rule(root: subtree(:root)) do
-          [
-            "BEGIN;",
-            "SET foreign_key_checks=0;",
-            root,
-            "SET foreign_key_checks=1;",
-            "COMMIT;",
-          ].join("\n\n") + "\n"
+          if root.to_s.present?
+            [
+              "BEGIN;",
+              "SET foreign_key_checks=0;",
+              root,
+              "SET foreign_key_checks=1;",
+              "COMMIT;",
+            ].join("\n\n") + "\n"
+          else
+            ""
+          end
         end
 
         rule(

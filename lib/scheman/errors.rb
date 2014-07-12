@@ -8,5 +8,11 @@ module Scheman
 
     class ViewNotFound < Base
     end
+
+    class CommandNotFound < Base
+    end
+
+    class NoBeforeSchema < Base
+    end
   end
 end

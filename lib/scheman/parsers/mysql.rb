@@ -92,6 +92,10 @@ module Scheman
           match('\s')
         end
 
+        rule(:space?) do
+          match('\s').maybe
+        end
+
         rule(:spaces) do
           space.repeat(1)
         end
@@ -140,7 +144,12 @@ module Scheman
         end
 
         rule(:comment) do
-          (str("#") | str("--")) >> non(newline) >> newline >> spaces?
+          (
+            (str("#") | str("--")) >> non(newline) >> newline
+          ) | (
+            str("/") >> space? >> str("*") >>
+              ((str("*") >> space? >> str("/")).absent? >> any).repeat >> (str("*") >> space? >> str("/"))
+          )
         end
 
         rule(:use) do
