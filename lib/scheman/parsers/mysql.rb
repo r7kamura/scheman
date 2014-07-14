@@ -182,7 +182,13 @@ module Scheman
 
         rule(:create_table) do
           create_table_beginning >> spaces >> table_name >>
-            spaces? >> table_components >> eol
+            spaces? >> table_components >> (spaces? >> create_table_options >> spaces?).maybe >> eol
+        end
+
+        rule(:create_table_options) do
+          (
+            case_insensitive_str("comment") >> spaces? >> str("=") >> spaces? >> single_quoted(match("[^']").repeat(1))
+          )
         end
 
         rule(:table_components) do
@@ -350,7 +356,7 @@ module Scheman
         end
 
         rule(:field_comment) do
-          case_insensitive_str("comment") >> spaces >> single_quoted(match("[^']"))
+          case_insensitive_str("comment") >> spaces >> single_quoted(match("[^']").repeat(1))
         end
 
         rule(:on_update) do
