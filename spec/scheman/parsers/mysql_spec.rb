@@ -544,5 +544,15 @@ describe Scheman::Parsers::Mysql do
         expect { subject }.not_to raise_error
       end
     end
+
+    context "with engine table option" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER) ENGINE=MyISAM AUTO_INCREMENT=1;"
+      end
+
+      it "succeeds in parse" do
+        expect { subject }.not_to raise_error
+      end
+    end
   end
 end

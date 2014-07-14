@@ -143,6 +143,10 @@ module Scheman
           delimiter >> spaces?
         end
 
+        rule(:word) do
+          match('\w').repeat(1)
+        end
+
         rule(:comment) do
           (
             (str("#") | str("--")) >> non(newline) >> newline
@@ -186,8 +190,8 @@ module Scheman
         end
 
         rule(:create_table_options) do
-          comment_table_option |
-            charset_table_option
+          (comment_table_option | charset_table_option | other_table_option) >>
+            (spaces >> (comment_table_option | charset_table_option | other_table_option)).repeat
         end
 
         rule(:comment_table_option) do
@@ -197,7 +201,11 @@ module Scheman
         rule(:charset_table_option) do
           case_insensitive_str("default ").maybe >>
             (case_insensitive_str("charset") | case_insensitive_str("character set")) >>
-            spaces? >> str("=") >> spaces? >> match('\w').repeat(1)
+            spaces? >> str("=") >> spaces? >> word
+        end
+
+        rule(:other_table_option) do
+          word >> spaces? >> str("=") >> spaces? >> (word | single_quoted(word) | double_quoted(word))
         end
 
         rule(:table_components) do
