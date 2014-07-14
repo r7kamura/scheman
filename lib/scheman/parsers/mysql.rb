@@ -93,7 +93,7 @@ module Scheman
         end
 
         rule(:space?) do
-          match('\s').maybe
+          space.maybe
         end
 
         rule(:spaces) do
