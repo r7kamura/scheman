@@ -1,3 +1,7 @@
+## 0.0.4
+* Add `schema diff` command
+* Improve MySQL parser logic
+
 ## 0.0.3
 * Support DEFAULT column qualifier
 
