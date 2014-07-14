@@ -3,6 +3,8 @@ module Scheman
     class Diff < Base
       DEFAULT_AFTER_SCHEMA_PATH = "schema.sql"
 
+      DEFAULT_TYPE = "mysql"
+
       # @param argv [Array] ARGV
       def initialize(argv)
         @argv = argv
@@ -41,7 +43,7 @@ module Scheman
       # @example
       #   "mysql"
       def type
-        options[:type]
+        options[:type] || DEFAULT_TYPE
       end
 
       # @return [Schema::Diff]
