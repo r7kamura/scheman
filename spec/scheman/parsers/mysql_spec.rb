@@ -494,5 +494,15 @@ describe Scheman::Parsers::Mysql do
         }
       end
     end
+
+    context "with empty string" do
+      let(:str) do
+        ""
+      end
+
+      it "succeeds in parse" do
+        should == []
+      end
+    end
   end
 end

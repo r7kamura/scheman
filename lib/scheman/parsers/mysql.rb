@@ -67,7 +67,7 @@ module Scheman
         root(:statements)
 
         rule(:statements) do
-          statement.repeat(1).as(:statements)
+          statement.repeat.as(:statements)
         end
 
         rule(:statement) do
@@ -80,7 +80,8 @@ module Scheman
           alter |
           insert |
           delimiter_statement |
-          empty_statement
+          empty_statement |
+          spaces
         end
 
         rule(:newline) do
