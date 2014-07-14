@@ -300,7 +300,12 @@ module Scheman
         # @example
         #   "NOT NULL"
         def type
-          @element[:type].upcase.gsub("_", " ")
+          case @element[:type]
+          when "auto_increment"
+            @element[:type].upcase
+          else
+            @element[:type].upcase.gsub("_", " ")
+          end
         end
 
         # @example

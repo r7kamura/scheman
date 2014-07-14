@@ -369,7 +369,7 @@ module Scheman
         end
 
         rule(:auto_increment_qualifier) do
-          case_insensitive_str("auto increment").as(:auto_increment_qualifier)
+          case_insensitive_str("auto_increment").as(:auto_increment_qualifier)
         end
 
         rule(:field_comment) do

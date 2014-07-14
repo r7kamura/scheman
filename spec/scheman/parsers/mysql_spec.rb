@@ -29,7 +29,7 @@ describe Scheman::Parsers::Mysql do
           CREATE DATABASE database_name;
 
           CREATE TABLE `table1` (
-            `column1` INTEGER(11) NOT NULL AUTO INCREMENT,
+            `column1` INTEGER(11) NOT NULL AUTO_INCREMENT,
             `column2` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`column1`)
           );
@@ -141,9 +141,9 @@ describe Scheman::Parsers::Mysql do
       end
     end
 
-    context "with AUTO INCREMENT field qualifier" do
+    context "with AUTO_INCREMENT field qualifier" do
       let(:str) do
-        "CREATE TABLE `table1` (`column1` INTEGER AUTO INCREMENT);"
+        "CREATE TABLE `table1` (`column1` INTEGER AUTO_INCREMENT);"
       end
 
       it "succeeds in parse" do
