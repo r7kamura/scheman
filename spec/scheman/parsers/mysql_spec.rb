@@ -524,5 +524,25 @@ describe Scheman::Parsers::Mysql do
         expect { subject }.not_to raise_error
       end
     end
+
+    context "with charset table option" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER) DEFAULT CHARSET=latin1;"
+      end
+
+      it "succeeds in parse" do
+        expect { subject }.not_to raise_error
+      end
+    end
+
+    context "with another charset table option" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER) CHARACTER SET=latin1;"
+      end
+
+      it "succeeds in parse" do
+        expect { subject }.not_to raise_error
+      end
+    end
   end
 end

@@ -186,9 +186,18 @@ module Scheman
         end
 
         rule(:create_table_options) do
-          (
-            case_insensitive_str("comment") >> spaces? >> str("=") >> spaces? >> single_quoted(match("[^']").repeat(1))
-          )
+          comment_table_option |
+            charset_table_option
+        end
+
+        rule(:comment_table_option) do
+          case_insensitive_str("comment") >> spaces? >> str("=") >> spaces? >> single_quoted(match("[^']").repeat(1))
+        end
+
+        rule(:charset_table_option) do
+          case_insensitive_str("default ").maybe >>
+            (case_insensitive_str("charset") | case_insensitive_str("character set")) >>
+            spaces? >> str("=") >> spaces? >> match('\w').repeat(1)
         end
 
         rule(:table_components) do
