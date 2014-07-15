@@ -79,4 +79,4 @@ $ mysqldump --no-data --compact db_name | scheman diff | mysql db_name
 ```
 
 ### Rails
-[scheman-rails](https://github.com/r7kamura/scheman-rails) provides some rake tasks for Rails.
+[scheman-rails](https://github.com/r7kamura/scheman-rails) provides some rake tasks to use scheman with Rails.
