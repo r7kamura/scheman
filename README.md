@@ -60,12 +60,20 @@ You can input schema data into `scheman diff` command via STDIN, instead of --be
 For instance, this interface is useful when you want to use `mysqldump` command to get your current schema.
 
 ```sh
-$ mysqldump --no-data --compact database_name | scheman diff --after after.sql
+$ mysqldump --no-data --compact db_name | scheman diff --after after.sql
 ```
 
 ### ./schema.sql
 Scheman use `./schema.sql` as a default value of --after option.
 
 ```sh
-$ mysqldump --no-data --compact database_name | scheman diff
+$ mysqldump --no-data --compact db_name | scheman diff
+```
+
+### Pipes
+Here is an example workflow of schema modification, using UNIX pipes.
+
+```sh
+$ vi schema.sql
+$ mysqldump --no-data --compact db_name | scheman diff | mysql db_name
 ```
