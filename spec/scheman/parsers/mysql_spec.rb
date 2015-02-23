@@ -417,7 +417,7 @@ describe Scheman::Parsers::Mysql do
 
     context "with KEY" do
       let(:str) do
-        "CREATE TABLE `table1` (`column1` INTEGER, KEY index1 (`column1`));"
+        "CREATE TABLE `table1` (`column1` INTEGER, KEY `index1` (`column1`));"
       end
 
       it "succeeds in parse" do
