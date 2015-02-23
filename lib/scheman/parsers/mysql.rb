@@ -89,7 +89,7 @@ module Scheman
         end
 
         rule(:space) do
-          match('\s')
+          match('\s') | comment
         end
 
         rule(:space?) do
@@ -222,7 +222,7 @@ module Scheman
         end
 
         rule(:create_definition) do
-          index | field | comment
+          index | field
         end
 
         rule(:index) do
@@ -297,12 +297,11 @@ module Scheman
 
         rule(:field) do
           (
-            comment.repeat >> field_name.as(:field_name) >> spaces >> field_type >>
+            field_name.as(:field_name) >> spaces >> field_type >>
               (spaces >> field_qualifiers).maybe.as(:field_qualifiers) >>
               (spaces >> field_comment).maybe >>
               (spaces >> reference_definition).maybe >>
-              (spaces >> on_update).maybe >>
-              comment.maybe
+              (spaces >> on_update).maybe
           ).as(:field)
         end
 

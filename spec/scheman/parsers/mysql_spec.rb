@@ -564,5 +564,23 @@ describe Scheman::Parsers::Mysql do
         expect { subject }.not_to raise_error
       end
     end
+
+    context "with various comment outs" do
+      let(:str) do
+        <<-EOS.strip_heredoc
+          # comment
+          CREATE TABLE `table1` (
+            `column1` INTEGER(11) NOT NULL AUTO_INCREMENT,
+            -- `column1` VARCHAR(11) NOT NULL AUTO_INCREMENT,
+            `column2` VARCHAR(255)/* comment here! */NOT NULL,
+            PRIMARY KEY (`column1`)
+          ); -- comment out
+        EOS
+      end
+
+      it "succeeds in parse" do
+        expect { subject }.not_to raise_error
+      end
+    end
   end
 end
