@@ -442,9 +442,7 @@ module Scheman
 
         rule(:quoted_identifier) do
           (
-            single_quoted(match("[^']").repeat(1)) |
-              double_quoted(match('[^"]').repeat(1)) |
-              back_quoted(match("[^`]").repeat(1))
+            back_quoted(match("[^`]").repeat(1))
           ).as(:quoted_identifier)
         end
 
