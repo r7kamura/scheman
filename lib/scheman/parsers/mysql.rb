@@ -273,7 +273,7 @@ module Scheman
         end
 
         rule(:index_name) do
-          identifier.as(:index_name)
+          (quoted_identifier | identifier).as(:index_name)
         end
 
         # TODO: Fix spaces not to allow no space
@@ -403,7 +403,7 @@ module Scheman
         end
 
         rule(:column_name) do
-          quoted_identifier.as(:column_name)
+          (quoted_identifier | identifier).as(:column_name)
         end
 
         rule(:value) do
