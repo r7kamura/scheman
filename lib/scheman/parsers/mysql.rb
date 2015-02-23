@@ -195,17 +195,17 @@ module Scheman
         end
 
         rule(:comment_table_option) do
-          case_insensitive_str("comment") >> spaces? >> str("=") >> spaces? >> single_quoted(match("[^']").repeat(1))
+          case_insensitive_str("comment") >> (spaces? >> str("=") >> spaces? | spaces) >> single_quoted(match("[^']").repeat(1))
         end
 
         rule(:charset_table_option) do
           case_insensitive_str("default ").maybe >>
             (case_insensitive_str("charset") | case_insensitive_str("character set")) >>
-            spaces? >> str("=") >> spaces? >> word
+            (spaces? >> str("=") >> spaces? | spaces) >> word
         end
 
         rule(:other_table_option) do
-          word >> spaces? >> str("=") >> spaces? >> (word | single_quoted(word) | double_quoted(word))
+          word >> (spaces? >> str("=") >> spaces? | spaces) >> (word | single_quoted(word) | double_quoted(word))
         end
 
         rule(:table_components) do
