@@ -1,3 +1,6 @@
+## 0.0.5
+* Improve parser rule for CREATE TABLE (Thx @yuki-takeichi)
+
 ## 0.0.4
 * Add `schema diff` command
 * Improve MySQL parser logic
