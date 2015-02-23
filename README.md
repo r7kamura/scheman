@@ -1,4 +1,4 @@
-# Scheman
+# Scheman [![Build Status](https://travis-ci.org/r7kamura/scheman.svg?branch=master)](https://travis-ci.org/r7kamura/scheman)
 SQL schema parser.
 
 ## Usage
