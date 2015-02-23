@@ -554,5 +554,15 @@ describe Scheman::Parsers::Mysql do
         expect { subject }.not_to raise_error
       end
     end
+
+    context "'=' character is optional in create table options" do
+      let(:str) do
+        "CREATE TABLE `table1` (`column1` INTEGER) COMMENT 'hoge' ENGINE MyISAM DEFAULT CHARACTER SET latin1;"
+      end
+
+      it "succeeds in parse" do
+        expect { subject }.not_to raise_error
+      end
+    end
   end
 end
